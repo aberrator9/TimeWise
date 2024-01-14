@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta>
+<meta charset="UTF-8">
+<title>Weather app</title>
+</meta>
+
+<body>
+
+  <div id="weather-app">
+    <form @submit.prevent="search">
+      <label>Area code:</label>
+      <input type="text" v-model="query">
+    </form>
+    <h2>{{ result }}</h2>
+    <p>
+      <span>Temp:</span>
+      <span class="flex-item">{{ temp }}</span>
+      <span>Humidity:</span>
+      <span class="flex-item">{{ humidity }}</span>
+      <span>Precip:</span>
+      <span class="flex-item">{{ precip }}</span>
+    </p>
+  </div>
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/vue/2.1.6/vue.min.js">
+  </script>
+
+  <script>
+    const app = new Vue({
+      el: "#weather-app",
+      data() {
+        return {
+          temp: '',
+          humidity: '',
+          precip: '',
+          query: '',
+          result: ''
+        }
+      }
+    });
+
+    async function search() {
+      const res = await fetch(
+        `http://api.weatherapi.com/v1/current.json?key=${YOUR_API_KEY}&q=${app.query}&aqi=no`
+      )
+
+      const json = await res.json()
+
+      app.temp = `${json.current.temp_f} F`
+      app.humidity = `${json.current.humidity}%`
+      app.precip = `${json.current.precip_in} in`
+      app.result = `Weather for ${json.location.name}, ${json.location.region}.`
+    }
+  </script>
+
+  <style>
+    .flex-item {
+      margin: 0rem 2rem 0rem 0.5rem;
+    }
+  </style>
+
+</body>
+
+</html>
