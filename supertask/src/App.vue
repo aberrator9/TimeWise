@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import Block from './components/Block.vue'
 
 let id = -1;
@@ -9,16 +9,11 @@ let supertasks = ref([
     id: ++id,
     txt: `supertask text ${id}`,
   },
-  {
-    id: ++id,
-    txt: `supertask text ${id}`,
-  },
 ])
 
-function getTasks() {
-  // supertasks = localStorage.supertasks;
-}
-getTasks(); 
+onMounted({
+  supertasks: localStorage.supertasks
+})
 
 </script>
 
