@@ -20,7 +20,7 @@
 body {
   min-height: 100vh;
   color: var(--color-text);
-  background: var(--color-background);
+  background: linear-gradient(125deg, var(--color-background), var(--color-03));
   font-family:
     Inter,
     -apple-system,

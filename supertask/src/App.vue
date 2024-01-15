@@ -7,12 +7,29 @@ let id = -1;
 let supertasks = ref([
   {
     id: ++id,
-    txt: `supertask text ${id}`,
+    name: `Learn`,
+    subtasks: [
+      { name: 'REST APIs', done: false },
+      { name: 'React', done: false },
+      { name: 'jQuery', done: false }
+    ]
+  },
+  {
+    id: ++id,
+    name: `Apply to jobs`,
+  },
+  {
+    id: ++id,
+    name: `Learn`,
+    subtasks: [
+      { name: 'REST APIs', done: false },
+      { name: 'React', done: false },
+      { name: 'jQuery', done: false }
+    ]
   },
 ])
 
 onMounted({
-  supertasks: localStorage.supertasks
 })
 
 </script>
@@ -21,12 +38,11 @@ onMounted({
 <template>
   <main>
     <div v-for="task in supertasks">
-      <Block :txt="task.txt" />
+      <Block :name="task.name" :subtasks="task.subtasks" />
     </div>
   </main>
 </template>
 
 <style scoped>
-@media (min-width: 1024px) {
-}
+@media (min-width: 1024px) {}
 </style>
