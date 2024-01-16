@@ -8,7 +8,7 @@ defineProps({
     subtasks: Array,
 })
 
-defineEmits(['new-subtask'])
+defineEmits(['new-subtask', 'save-tasks'])
 
 let open = ref(false)
 
@@ -19,8 +19,10 @@ let open = ref(false)
         <button @click="open = !open">...</button>
         <ul :class="{ hidden: !open }">
             <li v-for="subtask in subtasks">
-                <input type="checkbox" v-model="subtask.done">
-                <input type="text" :class="{ done: subtask.done }" v-model="subtask.name">
+                <form @submit.prevent="$emit('save-tasks')">
+                    <input type="checkbox" v-model="subtask.done">
+                    <input type="text" :class="{ done: subtask.done }" v-model="subtask.name">
+                </form>
             </li>
             <button @click="$emit('new-subtask')">+</button>
         </ul>

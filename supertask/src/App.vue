@@ -50,7 +50,7 @@ onUnmounted(() => {
         <button><img id="button-img" src="./assets/check.svg"></button>
         <button @click="removeTask(task)"><img id="button-img" src="./assets/ex.svg"></button>
       </form>
-      <Subtasks @new-subtask="newSubtask(task)" :name="task.name" :subtasks="task.subtasks" />
+      <Subtasks @new-subtask="newSubtask(task)" @save-tasks="saveTasks" :name="task.name" :subtasks="task.subtasks" />
     </div>
     <button @click="newTask">+</button>
   </main>
