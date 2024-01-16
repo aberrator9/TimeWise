@@ -1,36 +1,45 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
-import Block from './components/Block.vue';
+import { ref, onMounted, onUnmounted } from 'vue'
+import Subtasks from './components/Subtasks.vue'
 
-let id = -1;
+let id = -1
 
-const tasks = ref([]);
+const tasks = ref([])
 
-function addTask() {
-  tasks.value.push({ id: ++id, name: 'New Task', subtasks: [] });
+function newTask() {
+  tasks.value.push({ id: ++id, name: 'New Task', subtasks: [] })
+}
+
+function newSubtask(task){
+  console.log('new subtask requested')
+  task.subtasks.push({name: 'New subtask', done: false})
+}
+
+function removeTask(task) {
+  tasks.value = tasks.value.filter((t) => t !== task)
 }
 
 function saveTasks() {
-  console.log('tasks saved');
-  const parsed = JSON.stringify(tasks.value);
-  localStorage.setItem('tasks', parsed);
-  console.log('saved', parsed);
+  console.log('tasks saved')
+  const parsed = JSON.stringify(tasks.value)
+  localStorage.setItem('tasks', parsed)
+  console.log('saved', parsed)
 }
 
 onMounted(() => {
-  const storedTasks = localStorage.getItem('tasks');
+  const storedTasks = localStorage.getItem('tasks')
   if (storedTasks) {
     try {
-      tasks.value = JSON.parse(storedTasks);
+      tasks.value = JSON.parse(storedTasks)
     } catch (e) {
-      localStorage.removeItem('tasks');
+      localStorage.removeItem('tasks').json
     }
   }
 });
 
 onUnmounted(() => {
-  saveTasks();
-});
+  saveTasks()
+})
 </script>
 
 <template>
@@ -38,11 +47,12 @@ onUnmounted(() => {
     <div v-for="task in tasks" :key="task.id">
       <form @submit.prevent="saveTasks">
         <input v-model="task.name">
-        <button><img id="check" src="./assets/check.svg"></button>
+        <button><img id="button-img" src="./assets/check.svg"></button>
+        <button @click="removeTask(task)"><img id="button-img" src="./assets/ex.svg"></button>
       </form>
-      <Block :name="task.name" :subtasks="task.subtasks" />
+      <Subtasks @new-subtask="newSubtask(task)" :name="task.name" :subtasks="task.subtasks" />
     </div>
-    <button @click="addTask">+</button>
+    <button @click="newTask">+</button>
   </main>
 </template>
 
@@ -50,10 +60,10 @@ onUnmounted(() => {
 input {
   font-size: 2rem;
 }
-#check {
+
+#button-img {
   height: 35px;
   width: 35px;
 }
 
-@media (min-width: 1024px) {}
-</style>
+@media (min-width: 1024px) {}</style>

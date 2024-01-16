@@ -8,40 +8,38 @@ defineProps({
     subtasks: Array,
 })
 
+defineEmits(['new-subtask'])
+
 let open = ref(false)
 
 </script>
 
 <template>
     <div class="wrapper">
-        <!-- <h1>{{ name }}</h1> -->
         <button @click="open = !open">...</button>
         <ul :class="{ hidden: !open }">
             <li v-for="subtask in subtasks">
                 <input type="checkbox" v-model="subtask.done">
                 <input type="text" :class="{ done: subtask.done }" v-model="subtask.name">
             </li>
-            <button>+</button>
+            <button @click="$emit('new-subtask')">+</button>
         </ul>
     </div>
 </template>
 
 <style scoped>
+input {
+    font-size: 1rem;
+}
+
 button {
     margin: 1rem;
     max-height: 100%;
     align-self: center;
 }
+
 .wrapper {
     display: flex;
-}
-
-.block {
-    font-size: 1.5rem;
-    background-color: var(--color-02);
-    /* padding: 8rem 20rem; */
-    margin: 1rem 2rem;
-    border-radius: 10px;
 }
 
 .done {
@@ -51,5 +49,4 @@ button {
 
 .hidden {
     display: none;
-}
-</style>
+}</style>
