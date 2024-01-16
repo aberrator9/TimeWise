@@ -2,39 +2,26 @@
 import { defineProps, ref } from 'vue';
 
 defineProps({
-    name: '',
-    timeStart: -1,
-    timeEnd: -1,
-    subtasks: [],
+    name: String,
+    timeStart: Number,
+    timeEnd: Number,
+    subtasks: Array,
 })
 
 let open = ref(false)
-
-function addSubtask() {
-
-}
-
-function removeSubtask() {
-
-}
-
-function newSubtask() {
-    this.subtasks.push({ name: '', done: false })
-}
 
 </script>
 
 <template>
     <div class="wrapper">
-        <h2>{{ name }}</h2>
-        <button @click="open = !open">+</button>
+        <!-- <h1>{{ name }}</h1> -->
+        <button @click="open = !open">...</button>
         <ul :class="{ hidden: !open }">
-            <li @click="editable = !editable" v-for="subtask in subtasks">
+            <li v-for="subtask in subtasks">
                 <input type="checkbox" v-model="subtask.done">
-                <!-- <span :class="{ done: subtask.done, hidden: !open }" type="textbox">{{ subtask.name }}</span> -->
-                <input :class="{ done: subtask.done }" type="textbox" v-model="subtask.name">
+                <input type="text" :class="{ done: subtask.done }" v-model="subtask.name">
             </li>
-            <button @click="newSubtask">+</button>
+            <button>+</button>
         </ul>
     </div>
 </template>
@@ -59,12 +46,6 @@ function newSubtask() {
 
 .hidden {
     display: none;
-}
-
-input {
-    background-color: transparent;
-    border-color: transparent;
-    color: var(--color-text);
 }
 
 button {
