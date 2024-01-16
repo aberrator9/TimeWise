@@ -40,7 +40,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-input {
+input, button {
   background-color: transparent;
   border-color: transparent;
   color: var(--color-text);

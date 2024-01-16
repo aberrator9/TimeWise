@@ -8,7 +8,6 @@ const tasks = ref([]);
 
 function addTask() {
   tasks.value.push({ id: ++id, name: 'New Task', subtasks: [] });
-  saveTasks(); // Save tasks immediately after adding a new task
 }
 
 function saveTasks() {
@@ -39,17 +38,21 @@ onUnmounted(() => {
     <div v-for="task in tasks" :key="task.id">
       <form @submit.prevent="saveTasks">
         <input v-model="task.name">
-        <button>Save Task</button>
+        <button><img id="check" src="./assets/check.svg"></button>
       </form>
       <Block :name="task.name" :subtasks="task.subtasks" />
     </div>
-    <button @click="addTask">{{ '+' }}</button>
+    <button @click="addTask">+</button>
   </main>
 </template>
 
 <style scoped>
 input {
   font-size: 2rem;
+}
+#check {
+  height: 35px;
+  width: 35px;
 }
 
 @media (min-width: 1024px) {}

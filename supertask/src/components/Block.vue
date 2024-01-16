@@ -27,6 +27,11 @@ let open = ref(false)
 </template>
 
 <style scoped>
+button {
+    margin: 1rem;
+    max-height: 100%;
+    align-self: center;
+}
 .wrapper {
     display: flex;
 }
@@ -46,11 +51,5 @@ let open = ref(false)
 
 .hidden {
     display: none;
-}
-
-button {
-    margin: 1rem;
-    max-height: 100%;
-    align-self: center;
 }
 </style>
