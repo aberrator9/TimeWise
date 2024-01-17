@@ -10,9 +10,8 @@ function newTask() {
   tasks.value.push({ id: ++id, name: 'New Task', subtasks: [] })
 }
 
-function newSubtask(task){
-  console.log('new subtask requested')
-  task.subtasks.push({name: 'New subtask', done: false})
+function newSubtask(task) {
+  task.subtasks.push({ name: 'New subtask', done: false })
 }
 
 function removeTask(task) {
@@ -41,16 +40,19 @@ onMounted(() => {
 onUnmounted(() => {
   saveTasks()
 })
+
 </script>
 
 <template>
   <main>
     <div v-for="task in tasks" :key="task.id">
-      <form @submit.prevent="saveTasks">
-        <input v-model="task.name">
-        <button><img id="button-img" src="./assets/check.svg"></button>
-        <button @click="removeTask(task)"><img id="button-img" src="./assets/ex.svg"></button>
-      </form>
+      <div class="container">
+        <div class="task" contenteditable="true">{{ task.name }}</div>
+        <div class="right">
+          <button><img id="button-img" src="./assets/check.svg"></button>
+          <button @click="removeTask(task)"><img id="button-img" src="./assets/ex.svg"></button>
+        </div>
+      </div>
       <Subtasks @new-subtask="newSubtask(task)" @save-tasks="saveTasks" :name="task.name" :subtasks="task.subtasks" />
     </div>
     <button @click="newTask"><img id="button-img" src="./assets/plus.svg"></button>
@@ -58,13 +60,28 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-input {
+p {
   font-size: 2rem;
 }
 
-#button-img {
-  height: 30px;
-  width: 30px;
+.task {
+  font-size: 4rem;
+  font-weight: 200;
+  max-width: 60vw;
+  word-wrap: break-word;
 }
 
-@media (min-width: 1024px) {}</style>
+.right {
+  position: fixed;
+  align-self: center;
+  right: 10vw;
+}
+
+@media (min-width: 1024px) {
+  .right {
+    position: fixed;
+    align-self: center;
+    right: 25vw;
+  }
+}
+</style>
