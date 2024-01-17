@@ -10,8 +10,8 @@ defineProps({
 
 defineEmits(['new-subtask', 'save-tasks'])
 
-let open = ref(false)
-let currentIdx = ref(0)
+const open = ref(false)
+const currentIdx = ref(0)
 
 </script>
 
@@ -24,7 +24,7 @@ let currentIdx = ref(0)
                 <li v-for="subtask in subtasks">
                     <form @submit.prevent="$emit('save-tasks')">
                         <input type="checkbox" v-model="subtask.done">
-                        <div class="task" contenteditable="true" :class="{ done: subtask.done }">{{ subtask.name }}</div>
+                        <div class="subtask" contenteditable="true" :class="{ done: subtask.done }">{{ subtask.name }}</div>
                         <button><img id="button-img" src="../assets/check.svg"></button>
                     </form>
                 </li>
@@ -43,11 +43,10 @@ li {
     list-style-type: none;
 }
 
-.task {
-  font-size: 1.4rem;
-  font-weight: 400;
+.subtask {
+  font-size: 2rem;
+  font-weight: 600;
   max-width: 50vw;
-  word-wrap: break-word;
 }
 
 .done {
