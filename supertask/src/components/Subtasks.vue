@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, ref } from 'vue';
+import { defineProps, onMounted, ref } from 'vue';
 
 defineProps({
     name: String,
@@ -11,21 +11,33 @@ defineProps({
 defineEmits(['new-subtask', 'save-tasks'])
 
 let open = ref(false)
+let currentSubtask = 'current'
+
+onMounted(() => {
+    // currentSubtask = (this.subtasks && this.subtasks.length) ? this.subtasks[0].name: ''
+})
 
 </script>
 
 <template>
     <div class="wrapper">
-        <button @click="open = !open">...</button>
-        <ul :class="{ hidden: !open }">
-            <li v-for="subtask in subtasks">
-                <form @submit.prevent="$emit('save-tasks')">
-                    <input type="checkbox" v-model="subtask.done">
-                    <input type="text" :class="{ done: subtask.done }" v-model="subtask.name">
-                </form>
-            </li>
-            <button @click="$emit('new-subtask')">+</button>
-        </ul>
+        <!-- <ul :class="{ hidden: !open }"> -->
+            <button @click="open = !open">...</button>
+            <div v-if="open">
+                <ul>
+                    <li v-for="subtask in subtasks">
+                        <form @submit.prevent="$emit('save-tasks')">
+                            <input type="checkbox" v-model="subtask.done">
+                            <input type="text" :class="{ done: subtask.done }" v-model="subtask.name">
+                        <button><img id="button-img" src="../assets/check.svg"></button>
+                    </form>
+                </li>
+                <button @click="$emit('new-subtask')"><img id="button-img" src="../assets/plus.svg"></button>
+            </ul>
+        </div>
+        <div v-else>
+            <p> {{ (subtasks && subtasks.length) ? subtasks[subtasks.length - 1].name : '' }}</p>
+        </div>
     </div>
 </template>
 
@@ -35,9 +47,8 @@ input {
 }
 
 button {
-    margin: 1rem;
-    max-height: 100%;
-    align-self: center;
+    width: 30px;
+    height: 30px;
 }
 
 .wrapper {
@@ -51,4 +62,5 @@ button {
 
 .hidden {
     display: none;
-}</style>
+}
+</style>

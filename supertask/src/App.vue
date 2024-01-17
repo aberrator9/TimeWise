@@ -17,6 +17,7 @@ function newSubtask(task){
 
 function removeTask(task) {
   tasks.value = tasks.value.filter((t) => t !== task)
+  saveTasks()
 }
 
 function saveTasks() {
@@ -52,7 +53,7 @@ onUnmounted(() => {
       </form>
       <Subtasks @new-subtask="newSubtask(task)" @save-tasks="saveTasks" :name="task.name" :subtasks="task.subtasks" />
     </div>
-    <button @click="newTask">+</button>
+    <button @click="newTask"><img id="button-img" src="./assets/plus.svg"></button>
   </main>
 </template>
 
@@ -62,8 +63,8 @@ input {
 }
 
 #button-img {
-  height: 35px;
-  width: 35px;
+  height: 30px;
+  width: 30px;
 }
 
 @media (min-width: 1024px) {}</style>
