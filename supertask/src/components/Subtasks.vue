@@ -1,39 +1,45 @@
 <script setup>
-import { defineProps, onMounted, ref } from 'vue';
+import { defineProps, ref } from 'vue';
+import Editable from './Editable.vue';
 
 defineProps({
-    name: String,
+    task: Object,
     timeStart: Number,
     timeEnd: Number,
     subtasks: Array,
 })
 
-defineEmits(['new-subtask', 'save-tasks'])
+defineEmits(['new-subtask', 'save-tasks', 'remove-task'])
 
 const open = ref(false)
-const currentIdx = ref(0)
+const displayedIdx = ref(0)
+
+function updateTaskName(...args) {    // Child function returns a new name and a target task reference
+  args[0][1].name = args[0][0]        // targetTask.name = newName
+}
 
 </script>
 
 <template>
     <div class="container">
-        <!-- <ul :class="{ hidden: !open }"> -->
         <button @click="open = !open">...</button>
         <div v-if="open">
-            <ul>
-                <li v-for="subtask in subtasks">
-                    <form @submit.prevent="$emit('save-tasks')">
-                        <input type="checkbox" v-model="subtask.done">
-                        <div class="subtask" contenteditable="true" :class="{ done: subtask.done }">{{ subtask.name }}</div>
-                        <button><img id="button-img" src="../assets/check.svg"></button>
-                    </form>
-                </li>
-                <button @click="$emit('new-subtask')"><img id="button-img" src="../assets/plus.svg"></button>
-            </ul>
+            <div v-for="subtask in subtasks">
+                <!-- <form @submit.prevent="$emit('save-tasks')"> -->
+                    <div class="container">
+                        <input type="checkbox" v-model="subtask.done" />
+                        <Editable class="subtask m-1" :class="{ done: subtask.done }" @update="updateTaskName" :task-name="subtask.name" :task="subtask" />
+                        <button @click="$emit('save-tasks')"><img id="button-img" src="../assets/check.svg"></button>
+                        <button @click="$emit('remove-task', [prop.task, subtask.id])"><img id="button-img" src="../assets/ex.svg"></button>
+                    </div>
+                    <!-- </form> -->
+            </div>
+            <button @click="$emit('new-subtask')"><img id="button-img" src="../assets/plus.svg"></button>
         </div>
         <div class="container" v-else>
-            <p> {{ (subtasks && subtasks.length) ? subtasks[currentIdx].name : '' }}</p>
-            <button @click="randomIdx" :class="{ hidden: !subtasks.length }"><img id="button-img" src="../assets/die.svg"></button>
+            <p> {{ (subtasks && subtasks.length) ? subtasks[displayedIdx].name : '' }}</p>
+            <button @click="randomIdx" :class="{ hidden: !subtasks.length }"><img id="button-img"
+                    src="../assets/die.svg"></button>
         </div>
     </div>
 </template>
@@ -44,9 +50,9 @@ li {
 }
 
 .subtask {
-  font-size: 2rem;
-  font-weight: 600;
-  max-width: 50vw;
+    font-size: 2rem;
+    font-weight: 600;
+    max-width: 50vw;
 }
 
 .done {

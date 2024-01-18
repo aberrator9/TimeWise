@@ -68,6 +68,10 @@ input, button {
   display: none;
 }
 
+.m-1 {
+  margin: 1rem;
+}
+
 #button-img {
   height: 26px;
   width: 26px;
