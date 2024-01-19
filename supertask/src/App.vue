@@ -4,6 +4,7 @@ import Subtasks from './components/Subtasks.vue'
 import Editable from './components/Editable.vue';
 
 let taskIdx = -1
+let clickedIndex = ref(-1)
 
 const tasks = ref([])
 
@@ -15,13 +16,11 @@ function newSubtask(task) {
   task.subtasks.push({ name: 'New subtask', done: false })
 }
 
-function removeTask(...args) {  // 0: tasks ref; 1: subtask idx
-  if (args.length > 1) {
-    args[0].subtasks.splice(args[1], 1)
-  }
-  else {
+function removeTask(task) {  // 0: tasks ref; 1: subtask idx
+  // if (args.length > 1) {
+  //   args[0].subtasks.splice(args[1], 1)
+  // }
     tasks.value = tasks.value.filter((t) => t !== task)
-  }
   saveTasks()
 }
 
@@ -37,14 +36,16 @@ function saveTasks() {
   console.log('saved', parsed)
 }
 
+function handleClick(index) {
+    clickedIndex.value = index
+}
+
 onMounted(() => {
   const storedTasks = localStorage.getItem('tasks')
   if (storedTasks) {
     try {
       tasks.value = JSON.parse(storedTasks)
-
       taskIdx = tasks.value.length
-      console.log('taskIdx is', taskIdx)
     } catch (e) {
       localStorage.removeItem('tasks').json
     }
@@ -59,10 +60,10 @@ onUnmounted(() => {
 
 <template>
   <main>
-    <div v-for="task in tasks" :key="task.id">
+    <div v-for="(task, index) in tasks" :key="index">
       <div class="container">
-        <Editable class="task m-1" @update="updateTaskName" :task-name="task.name" :task="task" />
-        <div class="right">
+        <Editable class="task m-1" @click="handleClick(index)" @update="updateTaskName" :task-name="task.name" :task="task" />
+        <div v-if="index === clickedIndex" class="right align-center">
           <button @click="saveTasks"><img id="button-img" src="./assets/check.svg"></button>
           <button @click="removeTask(task)"><img id="button-img" src="./assets/ex.svg"></button>
         </div>
@@ -83,19 +84,5 @@ p {
   font-size: 4rem;
   font-weight: 200;
   max-width: 60vw;
-}
-
-.right {
-  position: fixed;
-  align-self: center;
-  right: 10vw;
-}
-
-@media (min-width: 1024px) {
-  .right {
-    position: fixed;
-    align-self: center;
-    right: 25vw;
-  }
 }
 </style>

@@ -8,16 +8,12 @@ const props = defineProps({
 })
 const emit = defineEmits(['update'])
 
-const editableRef = ref(null)
-
-onMounted(()=>{
-    console.log(props.taskName)
-})
+const editable = ref(null)
 
 </script>
   
 <template>
-    <div contenteditable="true" @blur="emit('update', [editableRef.textContent, task])" ref="editableRef">{{ props.taskName }}</div>
+    <div @blur="emit('update', [editable.textContent, task])" contenteditable="true" ref="editable">{{ props.taskName }}</div>
 </template>
 
 <style>
