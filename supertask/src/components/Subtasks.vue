@@ -4,8 +4,6 @@ import Editable from './Editable.vue';
 
 defineProps({
     task: Object,
-    timeStart: Number,
-    timeEnd: Number,
     subtasks: Array,
 })
 
@@ -60,7 +58,7 @@ function handleClick(index) {
         </div>
         <div class="container" v-else>
             <p class="subtask m-1" @click="open = true"> {{ (subtasks && subtasks.length) ? subtasks[displayedIdx].name : '' }}</p>
-            <button @click="rerollSubtask(subtasks.length)" class="align-center m-1" :class="{ hidden: !subtasks.length }"><img id="button-img"
+            <button @click="rerollSubtask(subtasks.length)" class="align-center m-1 die" :class="{ hidden: !subtasks.length }"><img id="button-img"
                     src="../assets/die.svg"></button>
         </div>
     </div>
@@ -75,6 +73,12 @@ li {
     font-size: 2rem;
     font-weight: 600;
     max-width: 50vw;
+}
+
+.die {
+    position: absolute;
+    right: 0;
+    margin: 0 40vw 0 auto
 }
 
 .done {

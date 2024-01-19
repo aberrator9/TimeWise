@@ -7,9 +7,12 @@ let taskIndex = -1
 let clickedIndex = ref(-1)
 
 const tasks = ref([])
+const taskObject = { id: ++taskIndex, name: 'New Task', subtasks: [], 
+                  days: { M: false, T: false, W: false, Th: false, F: false, S: false, Su:false},
+                  timespan: { start: '0000', end: '2400' } }
 
 function newTask() {
-  tasks.value.push({ id: ++taskIndex, name: 'New Task', subtasks: [] })
+  tasks.value.push(taskObject)
 }
 
 function removeTask(task) {
@@ -64,6 +67,9 @@ onUnmounted(() => {
 <template>
   <main>
     <div v-for="(task, index) in tasks" :key="index">
+      <container v-for="(day, index) in task.days">
+        <button class="day" :class="{inactive: !day}" @click="day.value = !day.value">{{ index }}</button>
+      </container>
       <div class="container">
         <Editable class="task m-1" @click="handleClick(index)" @update="updateTaskName" :task-name="task.name"
           :task="task" />
@@ -89,4 +95,5 @@ p {
   font-weight: 200;
   max-width: 60vw;
 }
+
 </style>
