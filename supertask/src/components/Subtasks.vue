@@ -9,7 +9,7 @@ defineProps({
     subtasks: Array,
 })
 
-defineEmits(['new-subtask', 'save-tasks', 'remove-task'])
+defineEmits(['new-subtask', 'save-tasks', 'remove-subtask'])
 
 const displayedIdx = ref(0)
 const open = ref(false)
@@ -52,7 +52,7 @@ function handleClick(index) {
                         @update="updateTaskName" :task-name="subtask.name" :task="subtask" ref="editable" />
                         <div class="align-center" v-if="index === clickedIndex">
                             <button :class="{ hidden: clickedIndex != index }" @click="$emit('save-tasks')"><img id="button-img" src="../assets/check.svg"></button>
-                            <button @click="$emit('remove-task', [subtask, subtask.id])"><img id="button-img" src="../assets/ex.svg"></button>
+                            <button @click="$emit('remove-subtask', [index, subtasks])"><img id="button-img" src="../assets/ex.svg"></button>
                         </div>
                 </div>
             </div>
