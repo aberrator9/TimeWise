@@ -4,11 +4,11 @@
             <div v-for="(subtask, index) in task.subtasks" :key="subtask.id">
                 <div class="container">
                     <input type="checkbox" v-model="subtask.done" />
-                    <Editable class="subtask m-1" :class="{ done: subtask.done }" @click="handleClick(index)" @blur="$emit('retract')"
+                    <Editable class="subtask m-1" :class="{ done: subtask.done }" @click="handleClick(index)"
                         @update="updateTaskName" :task-name="subtask.name" :task="subtask" ref="editable" />
                         <div class="align-center" v-if="index === activeIndex">
                             <button :class="{ hidden: activeIndex != index }" @click="$emit('save-tasks')"><img id="button-img" src="../assets/check.svg"></button>
-                            <button @click="$emit('remove-subtask', [index, subtasks])"><img id="button-img" src="../assets/ex.svg"></button>
+                            <button @click="$emit('remove-subtask', [index, task.subtasks])"><img id="button-img" src="../assets/ex.svg"></button>
                         </div>
                 </div>
             </div>

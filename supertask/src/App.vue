@@ -3,9 +3,10 @@
     <div v-for="(task, index) in tasks" :key="index">
       <div class="container">
         <div v-for="(day, index) in task.days">
-          <button class="day" :class="{ inactive: !day }" @click="task.days[index] = !task.days[index]">{{ index
-          }}</button>
+          <button class="day" :class="{ inactive: !day }" @click="task.days[index] = !task.days[index]">{{ index }}</button>
         </div>
+        <input type="time" name="start" v-model="task.timespan.start">
+        <input type="time" name="end" v-model="task.timespan.end">
       </div>
       <div class="container">
         <div v-if="index === activeId" class="align-center">
@@ -16,12 +17,7 @@
         <Editable class="task m-1" @click="activeId = index" @blur="activeId = -1" @update="updateTaskName" :task-name="task.name" :task="task"
           ref="editable" />
         <button class="m-1" @click="expandedId = expandedId === task.id ? -1 : task.id">
-          <div v-if="task.subtasks.length > 1">
             <svg id="button-img" width="800px" height="800px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"> <rect x="0" fill="none" width="20" height="20" /> <g> <path d="M5 10c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm12-2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-7 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" /> </g> </svg>
-          </div>
-          <div v-else>
-            <p class="new-text">+ subtask</p>
-          </div>
         </button>
         <div v-if="index === activeId" class="right align-center">
           <SaveButton @click="saveTasks()" />
@@ -51,7 +47,7 @@ function newTask() {
   tasks.value.push({
     id: uuid.v1(), name: 'New Task', subtasks: [],
     days: { M: false, T: false, W: false, Th: false, F: false, S: false, Su: false },
-    timespan: { start: '0000', end: '2400' }
+    timespan: { start: '00:00 AM', end: '00:00 AM'}
   })
 }
 
@@ -71,7 +67,7 @@ function newSubtask(task) {
 
 function removeSubtask(...args) {
   const [subtaskIndex, subtasks] = [args[0][0], args[0][1]]
-
+  
   subtasks.splice(subtaskIndex, 1)
   saveTasks()
 }
