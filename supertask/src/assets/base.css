@@ -54,6 +54,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+svg {
+  fill: var(--color-text);
+}
+
 button {
   background-color: transparent;
   border-color: transparent;
@@ -72,8 +76,8 @@ button {
   align-self: center;
 }
 
-.center-h {
-
+.new-text {
+  font-size: 0.2rem;
 }
 
 .day {

@@ -1,18 +1,58 @@
+<template>
+  <main>
+    <div v-for="(task, index) in tasks" :key="index">
+      <div class="container">
+        <div v-for="(day, index) in task.days">
+          <button class="day" :class="{ inactive: !day }" @click="task.days[index] = !task.days[index]">{{ index
+          }}</button>
+        </div>
+      </div>
+      <div class="container">
+        <div v-if="index === activeId" class="align-center">
+          <button @click="removeTask(task)">
+            <svg id="button-img" width="800px" height="800px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"> <g> <path d="M19.1 4.9C15.2 1 8.8 1 4.9 4.9S1 15.2 4.9 19.1s10.2 3.9 14.1 0 4-10.3.1-14.2zm-4.3 11.3L12 13.4l-2.8 2.8-1.4-1.4 2.8-2.8-2.8-2.8 1.4-1.4 2.8 2.8 2.8-2.8 1.4 1.4-2.8 2.8 2.8 2.8-1.4 1.4z" /> </g> </svg>
+          </button>
+        </div>
+        <Editable class="task m-1" @click="activeId = index" @blur="activeId = -1" @update="updateTaskName" :task-name="task.name" :task="task"
+          ref="editable" />
+        <button class="m-1" @click="expandedId = expandedId === task.id ? -1 : task.id">
+          <div v-if="task.subtasks.length > 1">
+            <svg id="button-img" width="800px" height="800px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"> <rect x="0" fill="none" width="20" height="20" /> <g> <path d="M5 10c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm12-2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-7 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" /> </g> </svg>
+          </div>
+          <div v-else>
+            <p class="new-text">+ subtask</p>
+          </div>
+        </button>
+        <div v-if="index === activeId" class="right align-center">
+          <SaveButton @click="saveTasks()" />
+        </div>
+      </div>
+      <Subtasks @new-subtask="newSubtask(task)" @save-tasks="saveTasks" @expand="expandedId = expandedId === task.id ? -1 : task.id" @retract="retract = expandedId = -1" @remove-subtask="removeSubtask" :task="task"
+        :expanded-id="expandedId" />
+    </div>
+    <button @click="newTask"><img id="button-img" src="./assets/plus.svg"></button>
+  </main>
+</template>
+
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { uuid } from 'vue-uuid';
 import Subtasks from './components/Subtasks.vue'
-import Editable from './components/Editable.vue';
+import Editable from './components/Editable.vue'
+import SaveButton from './components/SaveButton.vue'
 
-let taskIndex = -1
-let clickedIndex = ref(-1)
+let activeId = ref(-1)
+let expandedId = ref(-1)
+let editable = ref(null)
 
 const tasks = ref([])
-const taskObject = { id: ++taskIndex, name: 'New Task', subtasks: [], 
-                  days: { M: false, T: false, W: false, Th: false, F: false, S: false, Su:false},
-                  timespan: { start: '0000', end: '2400' } }
 
 function newTask() {
-  tasks.value.push(taskObject)
+  tasks.value.push({
+    id: uuid.v1(), name: 'New Task', subtasks: [],
+    days: { M: false, T: false, W: false, Th: false, F: false, S: false, Su: false },
+    timespan: { start: '0000', end: '2400' }
+  })
 }
 
 function removeTask(task) {
@@ -30,21 +70,15 @@ function newSubtask(task) {
 }
 
 function removeSubtask(...args) {
-  const [ subtaskIndex, subtasks ] = [ args[0][0], args[0][1] ]
+  const [subtaskIndex, subtasks] = [args[0][0], args[0][1]]
 
   subtasks.splice(subtaskIndex, 1)
   saveTasks()
 }
 
 function saveTasks() {
-  console.log('tasks saved')
   const parsed = JSON.stringify(tasks.value)
   localStorage.setItem('tasks', parsed)
-  console.log('saved', parsed)
-}
-
-function handleClick(index) {
-  clickedIndex.value = index
 }
 
 onMounted(() => {
@@ -64,36 +98,9 @@ onUnmounted(() => {
 
 </script>
 
-<template>
-  <main>
-    <div v-for="(task, index) in tasks" :key="index">
-      <container v-for="(day, index) in task.days">
-        <button class="day" :class="{inactive: !day}" @click="day.value = !day.value">{{ index }}</button>
-      </container>
-      <div class="container">
-        <Editable class="task m-1" @click="handleClick(index)" @update="updateTaskName" :task-name="task.name"
-          :task="task" />
-        <div v-if="index === clickedIndex" class="right align-center">
-          <button @click="saveTasks"><img id="button-img" src="./assets/check.svg"></button>
-          <button @click="removeTask(task)"><img id="button-img" src="./assets/ex.svg"></button>
-        </div>
-      </div>
-      <Subtasks @new-subtask="newSubtask(task)" @save-tasks="saveTasks" @remove-subtask="removeSubtask" :task="task"
-        :subtasks="task.subtasks" />
-    </div>
-    <button @click="newTask"><img id="button-img" src="./assets/plus.svg"></button>
-  </main>
-</template>
-
 <style scoped>
-p {
-  font-size: 2rem;
-}
-
 .task {
   font-size: 4rem;
   font-weight: 200;
   max-width: 60vw;
-}
-
-</style>
+}</style>

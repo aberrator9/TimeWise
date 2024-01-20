@@ -1,3 +1,7 @@
+<template>
+  <div @blur="emit('update', [editable.textContent, task])" contenteditable="true" ref="editable">{{ props.taskName }}</div>
+</template>
+
 <script setup>
 
 import { onMounted, ref } from 'vue'
@@ -11,10 +15,6 @@ const emit = defineEmits(['update'])
 const editable = ref(null)
 
 </script>
-  
-<template>
-    <div @blur="emit('update', [editable.textContent, task])" contenteditable="true" ref="editable">{{ props.taskName }}</div>
-</template>
 
 <style>
 div {
