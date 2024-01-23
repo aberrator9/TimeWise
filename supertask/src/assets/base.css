@@ -96,6 +96,29 @@ button {
   right: 10vw;
 }
 
+.task {
+  font-size: 4rem;
+  font-weight: 200;
+  max-width: 60vw;
+}
+
+.subtask {
+  font-size: 2rem;
+  font-weight: 600;
+  max-width: 50vw;
+}
+
+.die {
+  position: absolute;
+  left: 50%;
+  margin: 0 40vw 0 auto
+}
+
+.done {
+  opacity: 40%;
+  text-decoration: line-through;
+}
+
 .plus-task {
   margin-left: 5rem;
   font-size: 1.2rem;
