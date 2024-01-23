@@ -2,17 +2,17 @@
     <div class="container">
         <div v-if="expandedId === task.id">
             <div v-for="(subtask, index) in task.subtasks" :key="subtask.id">
-                <div class="container">
+                <div class="container" @mouseover="activeIndex = index" @mouseleave="activeIndex = -1">
                     <input type="checkbox" v-model="subtask.done" />
-                    <Editable class="subtask m-1" :class="{ done: subtask.done }" @click="handleClick(index)"
+                    <Editable class="subtask m-1" :class="{ done: subtask.done }"
                         @update="updateTaskName" :task-name="subtask.name" :task="subtask" ref="editable" />
                         <div class="align-center" v-if="index === activeIndex">
-                            <button :class="{ hidden: activeIndex != index }" @click="$emit('save-tasks')"><img id="button-img" src="../assets/check.svg"></button>
-                            <button @click="$emit('remove-subtask', [index, task.subtasks])"><img id="button-img" src="../assets/ex.svg"></button>
+                            <SaveButton @click="$emit('save-tasks')" />
+                            <RemoveButton @click="$emit('remove-subtask', [index, task.subtasks])" />
                         </div>
                 </div>
             </div>
-            <button @click="$emit('new-subtask')"><img id="button-img" src="../assets/plus.svg"></button>
+            <button @click="$emit('new-subtask')"><p class="plus-task">+ subtask</p></button>
         </div>
         <div class="container" v-else>
             <p class="subtask m-1" @click="$emit('expand')"> {{ (task.subtasks && task.subtasks.length) ? task.subtasks[displayedIdx].name : '' }}</p>
@@ -23,12 +23,14 @@
 </template>
 
 <script setup>
-import { computed, defineProps, getCurrentInstance, reactive, ref } from 'vue';
-import Editable from './Editable.vue';
+import { defineProps, ref } from 'vue'
+import Editable from './Editable.vue'
+import SaveButton from './SaveButton.vue'
+import RemoveButton from './RemoveButton.vue'
 
 defineProps({
     task: Object,
-    expandedId: Number
+    expandedId: String
 })
 
 defineEmits(['new-subtask', 'save-tasks', 'remove-subtask', 'expand', 'retract'])
@@ -54,10 +56,6 @@ function rerollSubtask(length){
     }
 
     displayedIdx.value = random
-}
-
-function handleClick(index) {
-    activeIndex.value = index
 }
 
 </script>

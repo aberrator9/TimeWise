@@ -70,6 +70,7 @@ button {
 
 .hidden {
   display: none;
+  pointer-events: none
 }
 
 .align-center {
@@ -93,6 +94,11 @@ button {
 .right {
   position: absolute;
   right: 10vw;
+}
+
+.plus-task {
+  margin-left: 5rem;
+  font-size: 1.2rem;
 }
 
 @media (min-width: 1024px) {
