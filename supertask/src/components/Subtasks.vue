@@ -1,10 +1,10 @@
 <template>
-    <div class="container">
+    <div class="flex">
         <div v-if="expandedId === task.id">
             <div v-for="(subtask, index) in task.subtasks" :key="subtask.id">
-                <div class="container" @mouseover="activeIndex = index" @mouseleave="activeIndex = -1">
+                <div class="flex ml-5" @mouseover="activeIndex = index" @mouseleave="activeIndex = -1">
                     <input type="checkbox" v-model="subtask.done" />
-                    <Editable class="subtask m-1" :class="{ done: subtask.done }"
+                    <Editable class="text-subtask m-05" :class="{ done: subtask.done }"
                         @update="updateTaskName" :task-name="subtask.name" :task="subtask" ref="editable" />
                         <div class="align-center" v-if="index === activeIndex">
                             <SaveButton @click="$emit('save-tasks')" />
@@ -12,10 +12,10 @@
                         </div>
                 </div>
             </div>
-            <button @click="$emit('new-subtask')"><p class="plus-task">+ Subtask</p></button>
+            <button @click="$emit('new-subtask')"><p class="text-add">+ Subtask</p></button>
         </div>
-        <div class="container" v-else>
-            <p class="subtask m-1" @click="$emit('expand')"> {{ (task.subtasks && task.subtasks.length) ? task.subtasks.length + ' subtasks' : '' }}</p>
+        <div class="flex" v-else>
+            <p class="text-subtask m-05 ml-5" @click="$emit('expand')"> {{ (task.subtasks && task.subtasks.length) ? task.subtasks.length + ' subtasks' : '' }}</p>
         </div>
     </div>
 </template>
