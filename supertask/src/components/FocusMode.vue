@@ -3,7 +3,8 @@
         <p class="task m-1">{{ task.name }}</p>
         <p class="align-center">For {{ getRemaining(task) }} more {{ units }}</p>
         <div class="container">
-            <p class="subtask m-1"> {{ (task.subtasks && task.subtasks.length) ? task.subtasks[displayedIdx].name : '' }}</p>
+            <p class="subtask m-1"> {{ (task.subtasks && task.subtasks.length) ? task.subtasks[displayedIdx].name : '' }}
+            </p>
             <button @click="rerollSubtask(task.subtasks.length)" class="align-center m-1 die"
                 :class="{ hidden: !task.subtasks.length }"><img id="button-img" src="../assets/die.svg"></button>
         </div>
@@ -44,7 +45,7 @@ function isHappeningNow(task) {
 }
 
 function HHMM(date) {
-    return date.getHours().toString().padStart(2, '0') + ':' + now.value.getMinutes().toString().padStart(2, '0')
+    return date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0')
 }
 
 function getCurrentTasks() {
@@ -52,14 +53,19 @@ function getCurrentTasks() {
 }
 
 function getRemaining(task) {
-    const hours = task.timeSpan.end.split(':')[0] - HHMM(now.value).split(':')[0]
-    const minutes = task.timeSpan.end.split(':')[1] - HHMM(now.value).split(':')[1]
-    
-    if( hours > 0) {
-        units = 'hour' + (hours > 1 ? 's' : '')
+    let [hours, minutes] = [0, task.timeSpan.end.split(':')[1] - HHMM(now.value).split(':')[1]]
+
+    if (task.timeSpan.start <= task.timeSpan.end) {     // Doesn't go over midnight
+        hours = task.timeSpan.end.split(':')[0] - HHMM(now.value).split(':')[0]
+    } else {
+        hours = 24 - HHMM(now.value).split(':')[0] + Number(task.timeSpan.end.split(':')[0])
+    }
+
+    if (hours > 0) {
+        units = 'hour' + (hours === 1 ? '' : 's')
         return hours
     } else {
-        units = 'minute' + (minutes > 1 ? 's' : '')
+        units = 'minute' + (minutes === 1 ? '' : 's')
         return minutes
     }
 }
