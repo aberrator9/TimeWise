@@ -1,37 +1,44 @@
 <template>
   <main>
-    <button class="right text-add" @click="editMode = !editMode">{{ editMode ? 'Focus' : 'Edit' }}</button>
+    <button @click="editMode = !editMode">{{ editMode ? 'Focus' : 'Edit' }}</button>
     <div v-if="editMode">
-      <div class="ml-3 m-3" v-for="(task, index) in tasks" :key="index">
+      <div v-for="(task, index) in tasks" :key="index">
         <div class="flex">
+          <div class="flex flex-auto shrink-0" @mouseover="activeId = index" @mouseleave="activeId = '-1'">
+            <div v-if="index === activeId">
+              <RemoveButton @click="removeTask(task)" />
+            </div>
+            <Editable @update="updateTaskName" :task-name="task.name" :task="task" ref="editable" />
+            <div v-if="index === activeId">
+              <SaveButton @click="saveTasks()" />
+              <button @click="expandedId = expandedId === task.id ? '-1' : task.id">
+                <svg id="button-img" width="800px" height="800px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="0" fill="none" width="20" height="20" />
+                  <g>
+                    <path
+                      d="M5 10c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm12-2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-7 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+                  </g>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="flex">
+            <label for="start">Start</label>
+            <input type="time" name="start" v-model="task.timeSpan.start">
+            <label for="end">End</label>
+            <input type="time" name="end" v-model="task.timeSpan.end">
+          </div>
           <div v-for="(day, index) in task.days">
-            <button class="text-day" :class="{ inactive: !day }" @click="task.days[index] = !task.days[index]">{{
-              dayAliases[index] }}</button>
-          </div>
-        </div>
-        <div class="flex">
-          <label for="start">Start</label>
-          <input class="ml-05" type="time" name="start" v-model="task.timeSpan.start">
-          <label class="ml-2"  for="end">End</label>
-          <input class="ml-05" type="time" name="end" v-model="task.timeSpan.end">
-        </div>
-        <div class="flex" @mouseover="activeId = index" @mouseleave="activeId = '-1'">
-          <div v-if="index === activeId" class="align-center">
-            <RemoveButton @click="removeTask(task)" />
-          </div>
-          <Editable class="text-task" @update="updateTaskName" :task-name="task.name" :task="task" ref="editable" />
-          <div v-if="index === activeId" class="right align-center">
-            <SaveButton @click="saveTasks()" />
-            <button class="ml-1" @click="expandedId = expandedId === task.id ? '-1' : task.id">
-              <svg id="button-img" width="800px" height="800px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"> <rect x="0" fill="none" width="20" height="20" /> <g> <path d="M5 10c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm12-2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-7 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" /> </g> </svg>
-            </button>
+            <button class=" m-0.5 p-0.5 w-8 h-8 rounded-full hover:bg-custom-04" :class="{ 'bg-custom-03': day, 'bg-custom-01': !day }"
+              @click="task.days[index] = !task.days[index]">{{
+                dayAliases[index] }}</button>
           </div>
         </div>
         <Subtasks @new-subtask="newSubtask(task)" @save-tasks="saveTasks"
           @expand="expandedId = expandedId === task.id ? -1 : task.id" @retract="retract = expandedId = -1"
           @remove-subtask="removeSubtask" :task="task" :expanded-id="expandedId" />
       </div>
-      <button class="text-add" @click="newTask">+ Task</button>
+      <button @click="newTask">+ Task</button>
     </div>
     <div v-else>
       <FocusMode :tasks="tasks" />

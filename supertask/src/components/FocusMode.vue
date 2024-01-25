@@ -1,11 +1,11 @@
 <template>
-    <div class="container" v-for="task in tasksNow">
-        <p class="task m-1">{{ task.name }}</p>
-        <p class="align-center">For {{ getRemaining(task) }} more {{ units }}</p>
-        <div class="container">
-            <p class="subtask m-1"> {{ (task.subtasks && task.subtasks.length) ? task.subtasks[displayedIdx].name : '' }}
+    <div v-for="task in tasksNow">
+        <p>{{ task.name }}</p>
+        <p>For {{ getRemaining(task) }} more {{ units }}</p>
+        <div>
+            <p> {{ (task.subtasks && task.subtasks.length) ? task.subtasks[displayedIdx].name : '' }}
             </p>
-            <button @click="rerollSubtask(task.subtasks.length)" class="align-center m-1 die"
+            <button @click="rerollSubtask(task.subtasks.length)"
                 :class="{ hidden: !task.subtasks.length }"><img id="button-img" src="../assets/die.svg"></button>
         </div>
     </div>
