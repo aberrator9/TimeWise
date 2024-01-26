@@ -1,44 +1,43 @@
 <template>
   <main>
-    <button @click="editMode = !editMode">{{ editMode ? 'Focus' : 'Edit' }}</button>
-    <div v-if="editMode">
-      <div v-for="(task, index) in tasks" :key="index">
-        <div class="flex">
-          <div class="flex flex-auto shrink-0" @mouseover="activeId = index" @mouseleave="activeId = '-1'">
-            <div v-if="index === activeId">
-              <RemoveButton @click="removeTask(task)" />
-            </div>
-            <Editable @update="updateTaskName" :task-name="task.name" :task="task" ref="editable" />
-            <div v-if="index === activeId">
-              <SaveButton @click="saveTasks()" />
-              <button @click="expandedId = expandedId === task.id ? '-1' : task.id">
-                <svg id="button-img" width="800px" height="800px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="0" fill="none" width="20" height="20" />
-                  <g>
-                    <path
-                      d="M5 10c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm12-2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-7 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
-                  </g>
-                </svg>
-              </button>
-            </div>
-          </div>
-          <div class="flex">
-            <label for="start">Start</label>
-            <input type="time" name="start" v-model="task.timeSpan.start">
-            <label for="end">End</label>
-            <input type="time" name="end" v-model="task.timeSpan.end">
-          </div>
-          <div v-for="(day, index) in task.days">
-            <button class=" m-0.5 p-0.5 w-8 h-8 rounded-full hover:bg-custom-04" :class="{ 'bg-custom-03': day, 'bg-custom-01': !day }"
-              @click="task.days[index] = !task.days[index]">{{
-                dayAliases[index] }}</button>
-          </div>
-        </div>
-        <Subtasks @new-subtask="newSubtask(task)" @save-tasks="saveTasks"
-          @expand="expandedId = expandedId === task.id ? -1 : task.id" @retract="retract = expandedId = -1"
-          @remove-subtask="removeSubtask" :task="task" :expanded-id="expandedId" />
+    <div class="absolute top-0 border-blue-500">
+      <div class="flex-auto" v-if="editMode">
+        <button @click="newTask">+ Task</button>
       </div>
-      <button @click="newTask">+ Task</button>
+      <button class="absolute" @click="editMode = !editMode">{{ editMode ? 'Focus' : 'Edit' }}</button>
+    </div>
+    <div v-if="editMode">
+      <div
+      class="place-items-center min-h-24 text-lg w-[17.5rem] border-2 border-lime-400 bg-zinc-800 shadow-[8px_8px_0px_rgba(180,225,65,0.2)] hover:shadow-[8px_8px_0px_rgba(180,225,65,0.4)] transition-colors p-5 m-4 rounded-sm"
+      @click="activeId = index" v-for="(task, index) in tasks" :key="index">
+      <div v-show="index === activeId">
+        <RemoveButton class="absolute translate-x-[17rem] translate-y-[-1rem]" @click="removeTask(task)" />
+      </div>
+        <Editable class="text-2xl font-bold justify-start m-0.5" @update="updateTaskName" :task-name="task.name" :task="task" ref="editable" />
+          <div v-if="index === activeId">
+            <div class="space-y-8">
+              <label class="text-sm mr-2" for="start">Start</label>
+              <input class="text-sm h-6 bg-zinc-900" type="time" name="start" v-model="task.timeSpan.start">
+              <label class="text-sm ml-4 mr-2" for="end">End</label>
+              <input class="text-sm h-6 bg-zinc-900" type="time" name="end" v-model="task.timeSpan.end">
+            </div>
+            <span v-for="(day, index) in task.days">
+              <button class="mt-2 m-0.5 p-0 w-[1.8rem] h-[1.8rem] rounded-full hover:bg-lime-800" :class="{ 'bg-lime-700': day }" @click="task.days[index] = !task.days[index]">
+                {{ dayAliases[index] }} 
+              </button>
+            </span>
+            <Subtasks class="flex-auto" @new-subtask="" @remove-subtask="removeSubtask" :task="task" />
+              <SaveButton class="absolute translate-x-[17rem] translate-y-[5rem]" @click="saveTasks()" />
+              <button class="mt-4 mb-14 ml-8" @click="newSubtask(task)">
+                <p>+ Subtask</p>
+              </button>
+          </div>
+        <div v-else>
+          <p class="my-2 ml-4">
+            {{ (task.subtasks && task.subtasks.length) ? task.subtasks.length + ' subtask' + (task.subtasks.length > 1 ? 's' : '') : '' }}
+          </p>
+        </div>
+      </div>
     </div>
     <div v-else>
       <FocusMode :tasks="tasks" />
@@ -56,7 +55,6 @@ import SaveButton from './components/SaveButton.vue'
 import RemoveButton from './components/RemoveButton.vue'
 
 let activeId = ref(-1)
-let expandedId = ref(-1)
 let editable = ref(null)
 const editMode = ref(true)
 
@@ -70,7 +68,7 @@ function newTask() {
   })
 }
 
-const dayAliases = { 0: 'Su', 1: 'M', 2: 'T', 3: 'W', 4: 'Th', 5: 'F', 6: 'S' }
+const dayAliases = { 0: 'Su', 1: 'M', 2: 'T', 3: 'W', 4: 'Th', 5: 'F', 6: 'Sa' }
 
 function removeTask(task) {
   tasks.value = tasks.value.filter((t) => t !== task)

@@ -1,21 +1,16 @@
 <template>
-    <div class="flex">
-        <div v-if="expandedId === task.id">
+    <div>
+        <div class="mt-6">
             <div v-for="(subtask, index) in task.subtasks" :key="subtask.id">
-                <div @mouseover="activeIndex = index" @mouseleave="activeIndex = -1">
+                <div class="inline-flex space-x-2">
                     <input type="checkbox" v-model="subtask.done" />
-                    <Editable :class="{ done: subtask.done }"
+                    <Editable @focus="activeIndex = index" :class="{ done: subtask.done }"
                         @update="updateTaskName" :task-name="subtask.name" :task="subtask" ref="editable" />
-                        <div v-if="index === activeIndex">
-                            <SaveButton @click="$emit('save-tasks')" />
+                        <span v-if="index === activeIndex">
                             <RemoveButton @click="$emit('remove-subtask', [index, task.subtasks])" />
-                        </div>
+                        </span>
                 </div>
             </div>
-            <button @click="$emit('new-subtask')"><p class="text-add">+ Subtask</p></button>
-        </div>
-        <div class="flex" v-else>
-            <p @click="$emit('expand')"> {{ (task.subtasks && task.subtasks.length) ? task.subtasks.length + ' subtasks' : '' }}</p>
         </div>
     </div>
 </template>
@@ -23,15 +18,13 @@
 <script setup>
 import { defineProps, ref } from 'vue'
 import Editable from './Editable.vue'
-import SaveButton from './SaveButton.vue'
 import RemoveButton from './RemoveButton.vue'
 
 defineProps({
     task: Object,
-    expandedId: String
 })
 
-defineEmits(['new-subtask', 'save-tasks', 'remove-subtask', 'expand', 'retract'])
+defineEmits(['remove-subtask'])
 
 const editable = ref(null)
 let activeIndex = ref(-1)

@@ -3,13 +3,13 @@
 @tailwind utilities;
 
 :root {
-    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Cabin', sans-serif;
     line-height: 1.5;
     font-weight: 400;
   
     color-scheme: light dark;
     color: rgba(255, 255, 255, 0.87);
-    background-color: rgb(32, 28, 41);
+    background-color: rgb(34, 33, 37);
   
     font-synthesis: none;
     text-rendering: optimizeLegibility;
@@ -25,30 +25,29 @@
     min-width: 320px;
     min-height: 100vh;
   }
+
+  svg {
+    fill: salmon;
+  }
+
+  .done {
+    opacity: 25%;
+  }
   
   #app {
-    max-width: 1280px;
     margin: 0 auto;
     padding: 2rem;
-    text-align: center;
   }
   
   #button-img {
-    height: 26px;
-    width: 26px;
+    height: 32px;
+    width: 32px;
   }
-  
-  @media (prefers-color-scheme: light) {
-    :root {
-      color: #213547;
-      background-color: #ffffff;
-    }
-    a:hover {
-      color: #747bff;
-    }
-    button {
-      background-color: #f9f9f9;
-    }
+
+  #save-button {
+    height: 96px;
+    width: 96px;
   }
+
   
   
