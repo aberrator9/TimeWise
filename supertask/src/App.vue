@@ -106,7 +106,7 @@ function newTask() {
   tasks.value.push({
     id: uuid.v1(), name: 'New Task', subtasks: [], subIdx: 0,
     days: [false, false, false, false, false, false, false],
-    timeSpan: { start: '00:00 AM', end: '00:00 AM' }
+    timeSpan: { start: '-1', end: '-1' }
   })
 
   // Wait for DOM update before scrolling

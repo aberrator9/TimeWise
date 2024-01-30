@@ -78,11 +78,14 @@ function getCurrentTasks() {
 }
 
 function getNextTask() {
-    const tasksFuture = props.tasks.filter((t) => !isHappeningNow(t))
+    const tasksFuture = props.tasks
+        .filter((t) => !isHappeningNow(t))
+        .filter((x) => x.timeSpan.start !== '-1' && x.timeSpan.end !== '-1' && x.days.some((x) => true))
+    console.log(tasksFuture.length)
 
-    if(props.tasks.length < 1) {
+    if(tasksFuture.length <= 0) {
         // TODO: Add dark mode / light mode joke 'Nothing left to do (in this world)💀'
-        return 'Nothing left 💀'
+        return 'Nothing left to do 💀'
     }
 
     let day = today
