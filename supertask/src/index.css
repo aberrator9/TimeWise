@@ -15,11 +15,6 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  body {
-    /* background: rgb(24 24 27); */
-    background: red;
-  }
-
   svg {
     fill: #f87171;
   }

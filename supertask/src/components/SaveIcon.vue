@@ -1,0 +1,3 @@
+<template>
+    <svg id="save-button" width="800px" height="800px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"> <rect x="0" fill="none" width="20" height="20" /> <g> <path fill="rgba(255, 255, 255, 0.87)" d="M15.3 5.3l-6.8 6.8-2.8-2.8-1.4 1.4 4.2 4.2 8.2-8.2" /> </g> </svg>
+</template>

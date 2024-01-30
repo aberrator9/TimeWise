@@ -4,11 +4,12 @@
             <div v-for="(subtask, index) in task.subtasks" :key="subtask.id">
                 <div class="inline-flex space-x-2">
                     <input type="checkbox" v-model="subtask.done" />
-                    <Editable @focus="activeIndex = index" :class="{ done: subtask.done }"
-                        @update="updateTaskName" :task-name="subtask.name" :task="subtask" ref="editable" />
-                        <span v-if="index === activeIndex">
-                            <RemoveButton @click="$emit('remove-subtask', [index, task.subtasks])" />
-                        </span>
+                    <Editable @keydown.enter.prevent="onPressEnter" @focus="activeIdx = index" id="subtask"
+                        :class="{ done: subtask.done }" @update="updateTaskName" :task-name="subtask.name"
+                        :task="subtask" />
+                    <span v-if="index === activeIdx">
+                        <RemoveButton @click="$emit('remove-subtask', [index, task.subtasks])" />
+                    </span>
                 </div>
             </div>
         </div>
@@ -26,18 +27,14 @@ defineProps({
 
 defineEmits(['remove-subtask'])
 
-const editable = ref(null)
-let activeIndex = ref(-1)
+let activeIdx = ref(-1)
+
+function onPressEnter(e) {
+    activeIdx.value = -1
+    e.target.blur()
+}
 
 function updateTaskName(...args) {  // Child function returns a new name and a target task reference
     args[0][1].name = args[0][0]    // targetTask.name = newName
 }
-
 </script>
-
-<style scoped>
-li {
-    list-style-type: none;
-}
-
-</style>
