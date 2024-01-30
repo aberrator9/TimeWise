@@ -49,7 +49,7 @@
                   @click="newSubtask(task)">
                   <p class="font-bold text-xl">+ Subtask</p>
                 </button>
-                <button class="flex place-items-center h-12 w-12 m-4 p-2 px-4 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.2)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 transition-all rounded-sm" @click="saveTasks(); activeIdx = -1">
+                <button class="flex place-items-center h-12 w-12 m-4 p-2 px-4 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.2)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 transition-all rounded-sm" @click="activeIdx = -1">
                   <SaveIcon class="flex-auto min-w-10 -translate-x-4"></SaveIcon>
                 </button>
               </div>
@@ -73,7 +73,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { uuid } from 'vue-uuid';
 import FocusMode from './components/FocusMode.vue'
 import Subtasks from './components/Subtasks.vue'
@@ -109,19 +109,16 @@ function newTask() {
   // Wait for DOM update before scrolling
   nextTick(() => {
     activeIdx.value = tasks.value.length - 1
-    console.log(activeIdx)
     window.scrollTo({ behavior: 'smooth', top: document.body.scrollHeight, block: 'top' })
   })
 }
 
 function removeTask(task) {
   tasks.value = tasks.value.filter((t) => t !== task)
-  saveTasks()
 }
 
 function updateTaskName(...args) {    // 0: newName; 1: targetTask
   args[0][1].name = args[0][0]        // targetTask.name = newName
-  saveTasks()
 }
 
 function newSubtask(task) {
@@ -132,12 +129,6 @@ function removeSubtask(...args) {
   const [subtaskIndex, subtasks] = [args[0][0], args[0][1]]
 
   subtasks.splice(subtaskIndex, 1)
-  saveTasks()
-}
-
-function saveTasks() {
-  const parsed = JSON.stringify(tasks.value)
-  localStorage.setItem('tasks', parsed)
 }
 
 onMounted(() => {
@@ -151,8 +142,13 @@ onMounted(() => {
   }
 })
 
-onUnmounted(() => {
-  saveTasks()
-})
+watch(tasks, () => {
+    localStorage.setItem('tasks', JSON.stringify(tasks.value));
+    console.log('task.value changed')
+  //   const parsed = JSON.stringify(tasks.value)
+  // localStorage.setItem('tasks', parsed)
+  },
+  { deep: true }
+);
 
 </script>
