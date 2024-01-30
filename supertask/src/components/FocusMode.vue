@@ -1,5 +1,5 @@
 <template>
-    <div v-for="task in tasksNow">
+    <div v-show="!showNext" v-for="task in tasksNow">
         <div
             class="mt-8 p-5 m-4 mb-4 place-items-center min-h-24 text-lg w-[17.5rem] border-2 border-red-400 bg-zinc-800 shadow-[8px_8px_0px_rgba(225,90,65,0.4)] hover:shadow-[10px_10px_0px_rgba(225,90,65,0.6)] transition-all rounded-sm">
             <Editable class="pointer-events-none text-2xl font-bold justify-start mt-2 ml-1" :task-name="task.name"
@@ -20,6 +20,18 @@
             </div>
         </div>
     </div>
+
+    <!-- <p class="ml-2 mt-6 mb-3">In {{ timeUntilNext() }} more {{ units }}</p> -->
+
+    <div v-show="showNext"
+            class="mt-8 p-5 m-4 mb-4 place-items-center min-h-24 text-lg w-[17.5rem] border-2 border-red-400 bg-zinc-800 shadow-[8px_8px_0px_rgba(225,90,65,0.4)] hover:shadow-[10px_10px_0px_rgba(225,90,65,0.6)] transition-all rounded-sm">
+            <div class="text-2xl font-bold justify-start mt-2 ml-1">{{ getNextTask() }}</div>
+            <div class="w-[90%] h-0.5 my-1 ml-[5%]">
+                <!-- <div class="shadow w-full bg-zinc-700 h-0.5">
+                    <div class="bg-red-400 leading-none text-center text-white h-0.5" :style="{ width: getPercentComplete(task) + '%' }"></div>
+                </div> -->
+            </div>
+        </div>
 </template>
 
 <script setup>
@@ -30,9 +42,13 @@ const props = defineProps({
     tasks: Array
 })
 
-let now = ref(new Date())
+const now = ref(new Date())
 let tasksNow = ref([])
+const showNext = ref(false)
+
+let next = undefined
 let units = 'hours'
+let today = 0
 
 setInterval(() => {
     now.value = new Date()
@@ -42,11 +58,8 @@ setInterval(() => {
 onMounted(() => tasksNow.value = getCurrentTasks())
 
 function isHappeningNow(task) {
-    const today = now.value.getDay()
+    today = now.value.getDay()
     const time = HHMM(now.value);
-
-    // console.log('today', today, 'task.days[thisDay]', task.days[today])
-    // console.log('timeNow', currentTime, 'task.timeSpan.start', task.timeSpan.start, 'task.timeSpan.end', task.timeSpan.end)
 
     if (task.timeSpan.start <= task.timeSpan.end) {     // Doesn't go over midnight
         return task.days[today] && (task.timeSpan.start <= time && time <= task.timeSpan.end)
@@ -61,6 +74,31 @@ function HHMM(date) {
 
 function getCurrentTasks() {
     tasksNow = props.tasks.filter((t) => isHappeningNow(t))
+    showNext.value = tasksNow.length <= 0
+}
+
+function getNextTask() {
+    const tasksFuture = props.tasks.filter((t) => !isHappeningNow(t))
+
+    if(props.tasks.length < 1) {
+        // TODO: Add dark mode / light mode joke 'Nothing left to do (in this world)💀'
+        return 'Nothing left 💀'
+    }
+
+    let day = today
+    while(next === undefined) {
+        // tasks today?
+        next = tasksFuture
+            .filter((t) => t.days[day] === true)
+            .sort((a, b) => a.timeSpan.start - b.timeSpan.start)[0];
+
+        // next day
+            day = day === 6 ? 0 : day + 1
+    }
+
+    if(next) {
+        return next.name
+    }
 }
 
 function getRemainingTime(task) {

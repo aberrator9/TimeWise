@@ -1,19 +1,19 @@
 <template>
   <main>
     <div
-      class="z-10 m-0 w-[100%] h-[100px] fixed text-2xl font-bold text-center">
-      <button v-if="editMode" @click="newTask"
-        class="m-4 p-2 px-4 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.2)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 transition-all rounded-sm">
+      class="z-10 mt-8 w-[100%] h-[100px] fixed text-2xl font-bold text-center">
+      <button v-if="editMode" @click.stop="newTask"
+        class="m-4 p-2 px-4 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.2)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 rounded-sm">
         + Task
       </button>
       <button v-show="editMode"
-        class="m-4 p-2 px-4 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.4)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 transition-all rounded-sm"
-        @click="editMode = !editMode">
+        class="m-4 p-2 px-4 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.4)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 rounded-sm"
+        @click.stop="editMode = !editMode">
         Focus
       </button>
       <button v-show="!editMode"
-        class="m-4 p-2 px-4  bg-zinc-800 shadow-[8px_8px_0px_rgba(180,225,65,0.2)] hover:shadow-[10px_10px_0px_rgba(180,225,65,0.4)] border-lime-400 border-2 transition-all rounded-sm"
-        @click="editMode = !editMode">
+        class="m-4 p-2 px-4  bg-zinc-800 shadow-[8px_8px_0px_rgba(180,225,65,0.2)] hover:shadow-[10px_10px_0px_rgba(180,225,65,0.4)] border-lime-400 border-2 rounded-sm"
+        @click.stop="editMode = !editMode">
         Edit
       </button>
     </div>
@@ -33,9 +33,9 @@
               <div @click.stop v-if="index === activeIdx">
                 <div class="space-y-8">
                   <label class="text-sm mr-2" for="start">Start</label>
-                  <input class="text-sm h-6 bg-zinc-900" type="time" name="start" v-model="task.timeSpan.start">
+                  <input id="time" @keydown.enter.prevent="onPressEnter" class="text-sm h-6 bg-zinc-900" type="time" name="start" v-model="task.timeSpan.start">
                   <label class="text-sm ml-4 mr-2" for="end">End</label>
-                  <input class="text-sm h-6 bg-zinc-900" type="time" name="end" v-model="task.timeSpan.end">
+                  <input id="time" @keydown.enter.prevent="onPressEnter" class="text-sm h-6 bg-zinc-900" type="time" name="end" v-model="task.timeSpan.end">
                 </div>
                 <span v-for="(day, index) in task.days">
                   <button class="mt-2 m-0.5 p-0 w-[1.8rem] h-[1.8rem] rounded-full hover:bg-lime-800"
@@ -89,7 +89,10 @@ const tasks = ref([])
 const dayAliases = { 0: 'Su', 1: 'M', 2: 'T', 3: 'W', 4: 'Th', 5: 'F', 6: 'Sa' }
 
 function onPressEnter(e) {
+  console.log(e.target)
+  if(e.target.id !== 'time') {
     activeIdx.value= -1
+}
     e.target.blur()
 }
 
