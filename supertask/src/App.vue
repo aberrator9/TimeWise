@@ -12,7 +12,7 @@
         Focus
       </button>
       <button v-show="!editMode"
-        class="m-4 p-2 px-4  bg-zinc-800 shadow-[8px_8px_0px_rgba(180,225,65,0.2)] hover:shadow-[10px_10px_0px_rgba(180,225,65,0.4)] border-lime-400 border-2 rounded-sm"
+        class="m-4 p-2 px-4  bg-zinc-800 shadow-[6px_6px_0px_rgba(180,225,65,0.2)] hover:shadow-[8px_8px_0px_rgba(180,225,65,0.4)] border-lime-400 border-2 rounded-sm"
         @click.stop="editMode = !editMode">
         Edit
       </button>
@@ -40,7 +40,7 @@
                 <span v-for="(day, index) in task.days">
                   <button class="mt-2 m-0.5 p-0 w-[1.8rem] h-[1.8rem] rounded-full hover:bg-lime-800"
                     :class="{ 'bg-lime-700': day }" @click="task.days[index] = !task.days[index]">
-                    {{ dayAliases[index] }}
+                    {{ dayAliases[index].short }}
                   </button>
                 </span>
                 <Subtasks @new-subtask="" @remove-subtask="removeSubtask" :task="task" />
@@ -86,10 +86,17 @@ const editMode = ref(true)
 
 const tasks = ref([])
 
-const dayAliases = { 0: 'Su', 1: 'M', 2: 'T', 3: 'W', 4: 'Th', 5: 'F', 6: 'Sa' }
+const dayAliases = { 
+  0: { short: 'Su', long: 'Sunday'},
+  1: { short: 'M', long: 'Monday'},
+  2: { short: 'T', long: 'Tuesday'},
+  3: { short: 'W', long: 'Wednesday'},
+  4: { short: 'Th', long: 'Thursday'},
+  5: { short: 'F', long: 'Friday'},
+  6: { short: 'Sa', long: 'Saturday'}
+}
 
 function onPressEnter(e) {
-  console.log(e.target)
   if(e.target.id !== 'time') {
     activeIdx.value= -1
 }
