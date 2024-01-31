@@ -13,11 +13,11 @@
                 </button>
             </div>
             <p class="ml-2 mb-3">For {{ timeLeft(task) }} more {{ units }}</p>
-            <!-- <div class="w-[90%] h-0.5 my-1 ml-[5%]">
+            <div class="w-[90%] h-0.5 my-1 ml-[5%]">
                 <div class="shadow w-full bg-zinc-700 h-0.5">
                     <div class="bg-red-400 leading-none text-center text-white h-0.5" :style="{ width: `${percentComplete(task)}%` }"></div>
                 </div>
-            </div> -->
+            </div>
         </div>
     </div>
 
@@ -59,6 +59,10 @@ function HHMM(date) {
     return date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0')
 }
 
+function isValid(timeSpan) {
+    return timeSpan.start !== '-1' && timeSpan.end !== '-1' && timeSpan.days.some((day) => day === true)
+}
+
 function isHappeningNow(timeSpan) {
     today = now.value.getDay()
     const time = HHMM(now.value);
@@ -70,21 +74,21 @@ function isHappeningNow(timeSpan) {
     }
 }
 
-function isValid(timeSpan) {
-    return timeSpan.start !== '-1' && timeSpan.end !== '-1' && timeSpan.days.some((day) => day === true)
+function lastEndTimeSpanHappeningNow(task) {
+    return task.timeSpans
+        .filter((x) => isHappeningNow(x))
+        .sort((a, b) => { a.end - b.end })[0]
 }
 
 function currentTasks() {
     tasksNow = props.tasks
-        .filter((task) => task.timeSpans.some((time) => isValid(time)))
-        .filter((task) => task.timeSpans.some((time) => isHappeningNow(time)))
+        .filter((task) => task.timeSpans.some((time) => isValid(time) && isHappeningNow(time)))
     showNext.value = tasksNow.length <= 0
 }
 
 function nextTask() {
     const tasksFuture = props.tasks
-        .filter((task) => task.timeSpans.some((time) => isValid(time)))
-        .filter((task) => task.timeSpans.some((time) => !isHappeningNow(time)))
+        .filter((task) => task.timeSpans.some((time) => isValid(time) && !isHappeningNow(time)))
 
     if(tasksFuture.length <= 0) {
         return 'Nothing left to do 💀'
@@ -108,24 +112,20 @@ function nextTask() {
 function timeLeft(task) {
     // Get all timespans from this task happening now
     // Get last end time; that's endSplit
-    const lastTimeSpan = task.timeSpans
-        .filter((x) => isHappeningNow(x))
-        .sort((a, b) => b - a)[0]
+    const lastEndTimeSpan = lastEndTimeSpanHappeningNow(task)
 
-    console.log('lastTimeSpan', lastTimeSpan)
-
-    const endSplit = lastTimeSpan.end.split(':')
+    const endSplit = lastEndTimeSpan.end.split(':')
     const nowSplit = HHMM(now.value).split(':')
     
     let [hours, minutes] = [0, 0]
 
-    if (lastTimeSpan.start <= lastTimeSpan.end) {   // Doesn't go over midnight
+    if (lastEndTimeSpan.start <= lastEndTimeSpan.end) {   // Doesn't go past midnight
         hours = endSplit[0] - nowSplit[0]
     } else {
         hours = 24 - nowSplit[0] + Number(endSplit[0])
     }
     
-    if (nowSplit[1] <= endSplit[1]) {               // Doesn't go past the top of the hour, when there's a 3 minute ad break, which you can avoid by subscribing for $5 or for free using your Twitch Prime
+    if (nowSplit[1] <= endSplit[1]) {               // Doesn't go past the top of the hour, when there's a three minute ad break, which you can avoid by subscribing for $5 or for free using your Twitch Prime. Here's the three minute ad break now.
         minutes = endSplit[1] - nowSplit[1]
     } else {
         minutes = 60 - nowSplit[1] + Number(endSplit[1])
@@ -164,8 +164,10 @@ function timeLeft(task) {
 
 function percentComplete(task) {
     const nowSplit = HHMM(now.value).split(':')
-    const startSplit = task.timeSpan.start.split(':')
-    const endSplit = task.timeSpan.end.split(':')
+
+    const lastEndTimeSpan = lastEndTimeSpanHappeningNow(task)
+    const startSplit = lastEndTimeSpan.start.split(':')
+    const endSplit = lastEndTimeSpan.end.split(':')
 
     const nowMinutes = nowSplit[0] * 60 + nowSplit[1]
     const startMinutes = startSplit[0] * 60 + startSplit[1]

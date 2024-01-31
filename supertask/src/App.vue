@@ -25,13 +25,13 @@
               class="mt-8 p-5 m-4 mb-4 place-items-center min-h-24 text-lg w-[17.5rem] border-2 border-lime-400 bg-zinc-800 shadow-[8px_8px_0px_rgba(180,225,65,0.2)] hover:shadow-[10px_10px_0px_rgba(180,225,65,0.4)] rounded-sm"
               @click="activeIdx = index, scrollToElement($event)">
               <div v-show="index === activeIdx">
-                  <button class="absolute translate-x-[15rem] translate-y-[-2.2rem]" @click.stop="removeTask(task)">
-                    <RemoveIcon></RemoveIcon>
-                  </button>
+                <button class="absolute translate-x-[15rem] translate-y-[-2.2rem]" @click.stop="removeTask(task)">
+                  <RemoveIcon></RemoveIcon>
+                </button>
               </div>
               <Editable @keydown.enter.prevent="onPressEnter" id="task" class="text-2xl font-bold justify-start mt-2 ml-1"
                 @update="updateTaskName" :task-name="task.name" :task="task" />
-              <Collapse @click.stop :when="index === activeIdx">
+              <Collapse @click.stop :when="index === activeIdx" class="v-collapse">
                 <div v-for="time in task.timeSpans">
                   <label class="text-sm mr-2" for="start">Start</label>
                   <input id="time" @keydown.enter.prevent="onPressEnter" class="text-sm h-6 bg-zinc-900" type="time"
@@ -49,12 +49,12 @@
                 </div>
                 <Subtasks @new-subtask="" @remove-subtask="removeSubtask" :task="task" />
                 <div class="flex space-x-4 mb-2 mt-3 place-items-center">
-                  <button
-                    class="p-2 px-4 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.2)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 rounded-sm"
-                    @click="newSubtask(task)">
+                  <button @click="newSubtask(task)"
+                    class="p-2 px-4 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.2)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 rounded-sm">
                     <p class="font-bold text-lg h-6 w-20 -translate-y-0.5 -translate-x-0.5">+ Subtask</p>
                   </button>
-                  <button class="flex place-items-center h-11 w-11 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.2)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 rounded-sm">
+                  <button @click="newTimeSpan(task)"
+                    class="flex place-items-center h-11 w-11 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.2)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 rounded-sm">
                     <TimeIcon></TimeIcon>
                   </button>
                   <button @click="activeIdx = -1"
@@ -118,6 +118,10 @@ function scrollToElement(e) {
   if (e.target) {
     e.target.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }
+}
+
+function newTimeSpan(task) {
+  task.timeSpans.push({ start: '-1', end: '-1', days: [false, false, false, false, false, false, false] })
 }
 
 function newTask() {
