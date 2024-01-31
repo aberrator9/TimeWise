@@ -1,15 +1,15 @@
 <template>
   <main>
-    <div
-      class="z-10 mt-8 w-[100%] h-[100px] fixed text-2xl font-bold text-center">
-      <button v-if="editMode" @click.stop="newTask"
-        class="m-4 p-2 px-4 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.2)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 rounded-sm">
-        + Task
-      </button>
+    <div id="header"
+      class="z-10 mb-2 bottom-0 w-[100%] h-32 fixed text-2xl font-bold text-center">
       <button v-show="editMode"
         class="m-4 p-2 px-4 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.4)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 rounded-sm"
         @click.stop="editMode = !editMode">
         Focus
+      </button>
+      <button v-show="editMode" @click.stop="newTask"
+        class="m-4 p-2 px-4 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.2)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 rounded-sm">
+        + Task
       </button>
       <button v-show="!editMode"
         class="m-4 p-2 px-4  bg-zinc-800 shadow-[6px_6px_0px_rgba(180,225,65,0.2)] hover:shadow-[8px_8px_0px_rgba(180,225,65,0.4)] border-lime-400 border-2 rounded-sm"
@@ -19,17 +19,19 @@
     </div>
     <div class="place-items-center justify-center p-0 min-h-[100vh] bg-zinc-900 flex flex-col"
       @click.self="activeIdx = -1">
-      <div class="mt-16 mb-4">
+      <div id="task-list-container" class="mt-4 mb-28">
         <div v-if="editMode">
-          <div v-for="(task, index) in tasks" :key="index">
+          <TransitionGroup name="list" tag="ul">
+          <div v-for="(task, index) in tasks" :key="task">
             <div
-              class="mt-8 p-5 m-4 mb-4 place-items-center min-h-24 text-lg w-[17.5rem] border-2 border-lime-400 bg-zinc-800 shadow-[8px_8px_0px_rgba(180,225,65,0.2)] hover:shadow-[10px_10px_0px_rgba(180,225,65,0.4)] transition-all rounded-sm"
+              class="mt-8 p-5 m-4 mb-4 place-items-center min-h-24 text-lg w-[17.5rem] border-2 border-lime-400 bg-zinc-800 shadow-[8px_8px_0px_rgba(180,225,65,0.2)] hover:shadow-[10px_10px_0px_rgba(180,225,65,0.4)] rounded-sm"
               @click="activeIdx = index, scrollToElement($event)">
               <div v-show="index === activeIdx">
                 <RemoveButton class="absolute translate-x-[15rem] translate-y-[-2.2rem]" @click.stop="removeTask(task)" />
               </div>
               <Editable @keydown.enter.prevent="onPressEnter" id="task" class="text-2xl font-bold justify-start mt-2 ml-1" @update="updateTaskName" :task-name="task.name"
                 :task="task" />
+                <Transition>
               <div @click.stop v-if="index === activeIdx">
                 <div class="space-y-8">
                   <label class="text-sm mr-2" for="start">Start</label>
@@ -45,11 +47,11 @@
                 </span>
                 <Subtasks @new-subtask="" @remove-subtask="removeSubtask" :task="task" />
                 <div class="flex">
-                  <button class="m-4 p-2 px-4 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.2)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 transition-all rounded-sm"
+                  <button class="m-4 p-2 px-4 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.2)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 rounded-sm"
                   @click="newSubtask(task)">
                   <p class="font-bold text-xl">+ Subtask</p>
                 </button>
-                <button class="flex place-items-center h-12 w-12 m-4 p-2 px-4 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.2)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 transition-all rounded-sm" @click="activeIdx = -1">
+                <button class="flex place-items-center h-12 w-12 m-4 p-2 px-4 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.2)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 rounded-sm" @click="activeIdx = -1">
                   <SaveIcon class="flex-auto min-w-10 -translate-x-4"></SaveIcon>
                 </button>
               </div>
@@ -60,8 +62,10 @@
                     1 ? 's' : '') : '' }}
                 </p>
               </div>
+            </Transition>
             </div>
           </div>
+        </TransitionGroup>
         </div>
         <div v-else>
           <FocusMode :tasks="tasks" />

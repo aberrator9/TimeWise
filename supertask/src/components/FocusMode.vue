@@ -15,7 +15,7 @@
             <p class="ml-2 mb-3">For {{ timeLeft(task) }} more {{ units }}</p>
             <div class="w-[90%] h-0.5 my-1 ml-[5%]">
                 <div class="shadow w-full bg-zinc-700 h-0.5">
-                    <div class="bg-red-400 leading-none text-center text-white h-0.5" :style="{ width: percentComplete(task) + '%' }"></div>
+                    <div class="bg-red-400 leading-none text-center text-white h-0.5" :style="{ width: `${percentComplete(task)}%` }"></div>
                 </div>
             </div>
         </div>
@@ -70,16 +70,22 @@ function isHappeningNow(task) {
     }
 }
 
+function isValid(t) {
+    return t.timeSpan.start !== '-1' && t.timeSpan.end !== '-1' && t.days.some((day) => day === true)
+}
+
 function currentTasks() {
-    tasksNow = props.tasks.filter((t) => isHappeningNow(t))
+    tasksNow = props.tasks
+        .filter((t) => isValid(t))
+        .filter((t) => isHappeningNow(t))
     showNext.value = tasksNow.length <= 0
 }
 
 function nextTask() {
     const tasksFuture = props.tasks
+        .filter((t) => isValid(t))
         .filter((t) => !isHappeningNow(t))
-        .filter((x) => x.timeSpan.start !== '-1' && x.timeSpan.end !== '-1' && x.days.some((day) => true))
-        .filter((x) => !x.days[today] || x.timeSpan.start > HHMM(now.value))
+        // .filter((x) => !x.days[today] || x.timeSpan.start > HHMM(now.value))
 
     if(tasksFuture.length <= 0) {
         return 'Nothing left to do 💀'
