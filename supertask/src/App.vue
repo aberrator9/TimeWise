@@ -1,7 +1,6 @@
 <template>
   <main>
-    <div id="header"
-      class="z-10 mb-2 bottom-0 w-[100%] h-32 fixed text-2xl font-bold text-center">
+    <div id="header" class="z-10 mb-2 bottom-0 w-[100%] h-32 fixed text-2xl font-bold text-center">
       <button v-show="editMode"
         class="m-4 p-2 px-4 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.4)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 rounded-sm"
         @click.stop="editMode = !editMode">
@@ -21,7 +20,6 @@
       @click.self="activeIdx = -1">
       <div id="task-list-container" class="mt-4 mb-28">
         <div v-if="editMode">
-          <TransitionGroup name="list" tag="ul">
           <div v-for="(task, index) in tasks" :key="task">
             <div
               class="mt-8 p-5 m-4 mb-4 place-items-center min-h-24 text-lg w-[17.5rem] border-2 border-lime-400 bg-zinc-800 shadow-[8px_8px_0px_rgba(180,225,65,0.2)] hover:shadow-[10px_10px_0px_rgba(180,225,65,0.4)] rounded-sm"
@@ -29,43 +27,45 @@
               <div v-show="index === activeIdx">
                 <RemoveButton class="absolute translate-x-[15rem] translate-y-[-2.2rem]" @click.stop="removeTask(task)" />
               </div>
-              <Editable @keydown.enter.prevent="onPressEnter" id="task" class="text-2xl font-bold justify-start mt-2 ml-1" @update="updateTaskName" :task-name="task.name"
-                :task="task" />
-                <Transition>
-              <div @click.stop v-if="index === activeIdx">
-                <div class="space-y-8">
-                  <label class="text-sm mr-2" for="start">Start</label>
-                  <input id="time" @keydown.enter.prevent="onPressEnter" class="text-sm h-6 bg-zinc-900" type="time" name="start" v-model="task.timeSpan.start">
-                  <label class="text-sm ml-4 mr-2" for="end">End</label>
-                  <input id="time" @keydown.enter.prevent="onPressEnter" class="text-sm h-6 bg-zinc-900" type="time" name="end" v-model="task.timeSpan.end">
-                </div>
-                <span v-for="(day, index) in task.days">
-                  <button class="mt-2 m-0.5 p-0 w-[1.8rem] h-[1.8rem] rounded-full hover:bg-lime-800"
-                    :class="{ 'bg-lime-700': day }" @click="task.days[index] = !task.days[index]">
-                    {{ dayAliases[index].short }}
+              <Editable @keydown.enter.prevent="onPressEnter" id="task" class="text-2xl font-bold justify-start mt-2 ml-1"
+              @update="updateTaskName" :task-name="task.name" :task="task" />
+                <Collapse @click.stop :when="index === activeIdx">
+                  <div class="space-y-8">
+                    <label class="text-sm mr-2" for="start">Start</label>
+                    <input id="time" @keydown.enter.prevent="onPressEnter" class="text-sm h-6 bg-zinc-900" type="time"
+                    name="start" v-model="task.timeSpan.start">
+                    <label class="text-sm ml-4 mr-2" for="end">End</label>
+                    <input id="time" @keydown.enter.prevent="onPressEnter" class="text-sm h-6 bg-zinc-900" type="time"
+                      name="end" v-model="task.timeSpan.end">
+                    </div>
+                    <span v-for="(day, index) in task.days">
+                      <button class="mt-2 m-0.5 p-0 w-[1.8rem] h-[1.8rem] rounded-full hover:bg-lime-800 selection:bg-transparent"
+                      :class="{ 'bg-lime-700': day }" @click="task.days[index] = !task.days[index]">
+                      {{ dayAliases[index].short }}
+                    </button>
+                  </span>
+                  <Subtasks @new-subtask="" @remove-subtask="removeSubtask" :task="task" />
+                  <div class="flex">
+                    <button
+                    class="m-4 p-2 px-4 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.2)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 rounded-sm"
+                    @click="newSubtask(task)">
+                    <p class="font-bold text-xl">+ Subtask</p>
                   </button>
-                </span>
-                <Subtasks @new-subtask="" @remove-subtask="removeSubtask" :task="task" />
-                <div class="flex">
-                  <button class="m-4 p-2 px-4 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.2)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 rounded-sm"
-                  @click="newSubtask(task)">
-                  <p class="font-bold text-xl">+ Subtask</p>
-                </button>
-                <button class="flex place-items-center h-12 w-12 m-4 p-2 px-4 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.2)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 rounded-sm" @click="activeIdx = -1">
+                  <button
+                  class="flex place-items-center h-12 w-12 m-4 p-2 px-4 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.2)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 rounded-sm"
+                  @click="activeIdx = -1">
                   <SaveIcon class="flex-auto min-w-10 -translate-x-4"></SaveIcon>
                 </button>
               </div>
-              </div>
-              <div v-else>
+            </Collapse>
+              <div v-show="index !== activeIdx">
                 <p class="my-2 ml-4">
                   {{ (task.subtasks && task.subtasks.length) ? task.subtasks.length + ' subtask' + (task.subtasks.length >
                     1 ? 's' : '') : '' }}
                 </p>
               </div>
-            </Transition>
             </div>
           </div>
-        </TransitionGroup>
         </div>
         <div v-else>
           <FocusMode :tasks="tasks" />
@@ -79,6 +79,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { uuid } from 'vue-uuid';
+import { Collapse } from 'vue-collapsed'
 import FocusMode from './components/FocusMode.vue'
 import Subtasks from './components/Subtasks.vue'
 import Editable from './components/Editable.vue'
@@ -90,21 +91,21 @@ const editMode = ref(true)
 
 const tasks = ref([])
 
-const dayAliases = { 
-  0: { short: 'Su', long: 'Sunday'},
-  1: { short: 'M', long: 'Monday'},
-  2: { short: 'T', long: 'Tuesday'},
-  3: { short: 'W', long: 'Wednesday'},
-  4: { short: 'Th', long: 'Thursday'},
-  5: { short: 'F', long: 'Friday'},
-  6: { short: 'Sa', long: 'Saturday'}
+const dayAliases = {
+  0: { short: 'Su', long: 'Sunday' },
+  1: { short: 'M', long: 'Monday' },
+  2: { short: 'T', long: 'Tuesday' },
+  3: { short: 'W', long: 'Wednesday' },
+  4: { short: 'Th', long: 'Thursday' },
+  5: { short: 'F', long: 'Friday' },
+  6: { short: 'Sa', long: 'Saturday' }
 }
 
 function onPressEnter(e) {
-  if(e.target.id !== 'time') {
-    activeIdx.value= -1
-}
-    e.target.blur()
+  if (e.target.id !== 'time') {
+    activeIdx.value = -1
+  }
+  e.target.blur()
 }
 
 function scrollToElement(e) {
@@ -157,11 +158,11 @@ onMounted(() => {
 })
 
 watch(tasks, () => {
-    localStorage.setItem('tasks', JSON.stringify(tasks.value));
-    console.log('task.value changed')
+  localStorage.setItem('tasks', JSON.stringify(tasks.value));
+  console.log('task.value changed')
   //   const parsed = JSON.stringify(tasks.value)
   // localStorage.setItem('tasks', parsed)
-  },
+},
   { deep: true }
 );
 
