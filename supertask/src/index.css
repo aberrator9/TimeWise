@@ -36,26 +36,12 @@ body {
   background: rgb(24, 24, 27)
 }
 
-svg {
-  fill: #f87171;
-}
-
 .done {
   opacity: 25%;
 }
 
 #app {
   min-height: 100vh;
-}
-
-#button-img {
-  height: 32px;
-  width: 32px;
-}
-
-#save-button {
-  height: 96px;
-  width: 96px;
 }
 
 @media (min-width:1025px) {

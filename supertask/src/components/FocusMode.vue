@@ -13,11 +13,11 @@
                 </button>
             </div>
             <p class="ml-2 mb-3">For {{ timeLeft(task) }} more {{ units }}</p>
-            <div class="w-[90%] h-0.5 my-1 ml-[5%]">
+            <!-- <div class="w-[90%] h-0.5 my-1 ml-[5%]">
                 <div class="shadow w-full bg-zinc-700 h-0.5">
                     <div class="bg-red-400 leading-none text-center text-white h-0.5" :style="{ width: `${percentComplete(task)}%` }"></div>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 
@@ -59,47 +59,46 @@ function HHMM(date) {
     return date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0')
 }
 
-function isHappeningNow(task) {
+function isHappeningNow(timeSpan) {
     today = now.value.getDay()
     const time = HHMM(now.value);
 
-    if (task.timeSpan.start <= task.timeSpan.end) {     // Doesn't go over midnight
-        return task.days[today] && (task.timeSpan.start <= time && time <= task.timeSpan.end)
+    if (timeSpan.start <= timeSpan.end) {     // Doesn't go over midnight
+        return timeSpan.days[today] && (timeSpan.start <= time && time <= timeSpan.end)
     } else {
-        return (task.days[today] || task.days[today === 6 ? 0 : today + 1, 6]) && (task.timeSpan.start <= time || time <= task.timeSpan.end)
+        return (timeSpan.days[today] || timeSpan.days[today === 6 ? 0 : today + 1, 6]) && (timeSpan.start <= time || time <= timeSpan.end)
     }
 }
 
-function isValid(t) {
-    return t.timeSpan.start !== '-1' && t.timeSpan.end !== '-1' && t.days.some((day) => day === true)
+function isValid(timeSpan) {
+    return timeSpan.start !== '-1' && timeSpan.end !== '-1' && timeSpan.days.some((day) => day === true)
 }
 
 function currentTasks() {
     tasksNow = props.tasks
-        .filter((t) => isValid(t))
-        .filter((t) => isHappeningNow(t))
+        .filter((task) => task.timeSpans.some((time) => isValid(time)))
+        .filter((task) => task.timeSpans.some((time) => isHappeningNow(time)))
     showNext.value = tasksNow.length <= 0
 }
 
 function nextTask() {
     const tasksFuture = props.tasks
-        .filter((t) => isValid(t))
-        .filter((t) => !isHappeningNow(t))
-        // .filter((x) => !x.days[today] || x.timeSpan.start > HHMM(now.value))
+        .filter((task) => task.timeSpans.some((time) => isValid(time)))
+        .filter((task) => task.timeSpans.some((time) => !isHappeningNow(time)))
 
     if(tasksFuture.length <= 0) {
         return 'Nothing left to do 💀'
     }
 
     let day = today
-    while(next === undefined) {
-        next = tasksFuture
-            .filter((t) => t.days[day] === true)
-            .sort((a, b) => a.timeSpan.start - b.timeSpan.start)[0];
+    // while(next === undefined) {
+    //     next = tasksFuture
+    //         .filter((t) => t.days[day] === true)
+    //         .sort((a, b) => a.timeSpan.start - b.timeSpan.start)[0];
 
-        day = day === 6 ? 0 : day + 1
-        daysUntilNext++
-    }
+    //     day = day === 6 ? 0 : day + 1
+    //     daysUntilNext++
+    // }
 
     if(next) {
         return next.name
@@ -107,18 +106,32 @@ function nextTask() {
 }
 
 function timeLeft(task) {
-    const endSplit = task.timeSpan.end.split(':')
+    // Get all timespans from this task happening now
+    // Get last end time; that's endSplit
+    const lastTimeSpan = task.timeSpans
+        .filter((x) => isHappeningNow(x))
+        .sort((a, b) => b - a)[0]
+
+    console.log('lastTimeSpan', lastTimeSpan)
+
+    const endSplit = lastTimeSpan.end.split(':')
     const nowSplit = HHMM(now.value).split(':')
     
-    let [hours, minutes] = [0, endSplit[1] - nowSplit[1]]
+    let [hours, minutes] = [0, 0]
 
-    if (task.timeSpan.start <= task.timeSpan.end) {     // Doesn't go over midnight
+    if (lastTimeSpan.start <= lastTimeSpan.end) {   // Doesn't go over midnight
         hours = endSplit[0] - nowSplit[0]
     } else {
         hours = 24 - nowSplit[0] + Number(endSplit[0])
     }
+    
+    if (nowSplit[1] <= endSplit[1]) {               // Doesn't go past the top of the hour, when there's a 3 minute ad break, which you can avoid by subscribing for $5 or for free using your Twitch Prime
+        minutes = endSplit[1] - nowSplit[1]
+    } else {
+        minutes = 60 - nowSplit[1] + Number(endSplit[1])
+    }
 
-    if (hours > 0) {
+    if (hours > 1) {
         units = 'hour' + (hours === 1 ? '' : 's')
         return hours
     } else {

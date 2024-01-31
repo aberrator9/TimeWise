@@ -25,39 +25,44 @@
               class="mt-8 p-5 m-4 mb-4 place-items-center min-h-24 text-lg w-[17.5rem] border-2 border-lime-400 bg-zinc-800 shadow-[8px_8px_0px_rgba(180,225,65,0.2)] hover:shadow-[10px_10px_0px_rgba(180,225,65,0.4)] rounded-sm"
               @click="activeIdx = index, scrollToElement($event)">
               <div v-show="index === activeIdx">
-                <RemoveButton class="absolute translate-x-[15rem] translate-y-[-2.2rem]" @click.stop="removeTask(task)" />
+                  <button class="absolute translate-x-[15rem] translate-y-[-2.2rem]" @click.stop="removeTask(task)">
+                    <RemoveIcon></RemoveIcon>
+                  </button>
               </div>
               <Editable @keydown.enter.prevent="onPressEnter" id="task" class="text-2xl font-bold justify-start mt-2 ml-1"
-              @update="updateTaskName" :task-name="task.name" :task="task" />
-                <Collapse @click.stop :when="index === activeIdx">
-                  <div class="space-y-8">
-                    <label class="text-sm mr-2" for="start">Start</label>
-                    <input id="time" @keydown.enter.prevent="onPressEnter" class="text-sm h-6 bg-zinc-900" type="time"
-                    name="start" v-model="task.timeSpan.start">
-                    <label class="text-sm ml-4 mr-2" for="end">End</label>
-                    <input id="time" @keydown.enter.prevent="onPressEnter" class="text-sm h-6 bg-zinc-900" type="time"
-                      name="end" v-model="task.timeSpan.end">
-                    </div>
-                    <span v-for="(day, index) in task.days">
-                      <button class="mt-2 m-0.5 p-0 w-[1.8rem] h-[1.8rem] rounded-full hover:bg-lime-800 selection:bg-transparent"
-                      :class="{ 'bg-lime-700': day }" @click="task.days[index] = !task.days[index]">
+                @update="updateTaskName" :task-name="task.name" :task="task" />
+              <Collapse @click.stop :when="index === activeIdx">
+                <div v-for="time in task.timeSpans">
+                  <label class="text-sm mr-2" for="start">Start</label>
+                  <input id="time" @keydown.enter.prevent="onPressEnter" class="text-sm h-6 bg-zinc-900" type="time"
+                    name="start" v-model="time.start">
+                  <label class="text-sm ml-4 mr-2" for="end">End</label>
+                  <input id="time" @keydown.enter.prevent="onPressEnter" class="text-sm h-6 bg-zinc-900" type="time"
+                    name="end" v-model="time.end">
+                  <span v-for="(day, index) in time.days">
+                    <button
+                      class="mt-2 m-0.5 p-0 w-[1.8rem] h-[1.8rem] rounded-full hover:bg-lime-800 selection:bg-transparent"
+                      :class="{ 'bg-lime-700': day }" @click="time.days[index] = !time.days[index]">
                       {{ dayAliases[index].short }}
                     </button>
                   </span>
-                  <Subtasks @new-subtask="" @remove-subtask="removeSubtask" :task="task" />
-                  <div class="flex">
-                    <button
-                    class="m-4 p-2 px-4 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.2)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 rounded-sm"
-                    @click="newSubtask(task)">
-                    <p class="font-bold text-xl">+ Subtask</p>
-                  </button>
+                </div>
+                <Subtasks @new-subtask="" @remove-subtask="removeSubtask" :task="task" />
+                <div class="flex space-x-4 mb-2 mt-3 place-items-center">
                   <button
-                  class="flex place-items-center h-12 w-12 m-4 p-2 px-4 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.2)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 rounded-sm"
-                  @click="activeIdx = -1">
-                  <SaveIcon class="flex-auto min-w-10 -translate-x-4"></SaveIcon>
-                </button>
-              </div>
-            </Collapse>
+                    class="p-2 px-4 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.2)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 rounded-sm"
+                    @click="newSubtask(task)">
+                    <p class="font-bold text-lg h-6 w-20 -translate-y-0.5 -translate-x-0.5">+ Subtask</p>
+                  </button>
+                  <button class="flex place-items-center h-11 w-11 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.2)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 rounded-sm">
+                    <TimeIcon></TimeIcon>
+                  </button>
+                  <button @click="activeIdx = -1"
+                    class="flex place-items-center h-11 w-11 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.2)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 rounded-sm">
+                    <SaveIcon></SaveIcon>
+                  </button>
+                </div>
+              </Collapse>
               <div v-show="index !== activeIdx">
                 <p class="my-2 ml-4">
                   {{ (task.subtasks && task.subtasks.length) ? task.subtasks.length + ' subtask' + (task.subtasks.length >
@@ -83,8 +88,9 @@ import { Collapse } from 'vue-collapsed'
 import FocusMode from './components/FocusMode.vue'
 import Subtasks from './components/Subtasks.vue'
 import Editable from './components/Editable.vue'
-import SaveIcon from './components/SaveIcon.vue'
-import RemoveButton from './components/RemoveButton.vue'
+import SaveIcon from './components/icons/SaveIcon.vue'
+import TimeIcon from './components/icons/TimeIcon.vue'
+import RemoveIcon from './components/icons/RemoveIcon.vue'
 
 let activeIdx = ref(-1)
 const editMode = ref(true)
@@ -117,8 +123,7 @@ function scrollToElement(e) {
 function newTask() {
   tasks.value.push({
     id: uuid.v1(), name: 'New Task', subtasks: [], subIdx: 0,
-    days: [false, false, false, false, false, false, false],
-    timeSpan: { start: '-1', end: '-1' }
+    timeSpans: [{ start: '-1', end: '-1', days: [false, false, false, false, false, false, false] }]
   })
 
   // Wait for DOM update before scrolling
@@ -159,9 +164,6 @@ onMounted(() => {
 
 watch(tasks, () => {
   localStorage.setItem('tasks', JSON.stringify(tasks.value));
-  console.log('task.value changed')
-  //   const parsed = JSON.stringify(tasks.value)
-  // localStorage.setItem('tasks', parsed)
 },
   { deep: true }
 );

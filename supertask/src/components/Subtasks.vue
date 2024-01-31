@@ -8,7 +8,7 @@
                         :class="{ done: subtask.done }" @update="updateTaskName" :task-name="subtask.name"
                         :task="subtask" />
                     <span v-if="index === activeIdx">
-                        <RemoveButton @click="$emit('remove-subtask', [index, task.subtasks])" />
+                        <RemoveIcon @click="$emit('remove-subtask', [index, task.subtasks])" />
                     </span>
                 </div>
             </div>
@@ -19,7 +19,7 @@
 <script setup>
 import { defineProps, ref } from 'vue'
 import Editable from './Editable.vue'
-import RemoveButton from './RemoveButton.vue'
+import RemoveIcon from './icons/RemoveIcon.vue'
 
 defineProps({
     task: Object,
