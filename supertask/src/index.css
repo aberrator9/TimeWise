@@ -20,7 +20,8 @@
   /* or transition: height var(--vc-auto-duration) ease-in-out */
 }
 
-.list-move, /* apply transition to moving elements */
+.list-move,
+/* apply transition to moving elements */
 .list-enter-active,
 .list-leave-active {
   transition: all 0.5s ease;
@@ -49,13 +50,83 @@ body {
   min-height: 100vh;
 }
 
-@media (min-width:1025px) {
+#header {
+  margin-top: 0;
+  margin-bottom: 2rem;
+  bottom: 0;
+  top: auto;
+  
+  --tw-translate-y: -4rem/* -16px */;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+#task-list-container {
+  margin-top: 1rem;
+  margin-bottom: 6rem;
+}
+
+#gradient-top {
+  top: 0;
+  height: 2rem;
+  background-image: linear-gradient(to top, var(--tw-gradient-stops));
+
+  --tw-gradient-from: transparent var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(24, 24, 27) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+
+  --tw-gradient-from-position: 0%;
+  --tw-gradient-to-position: 100%;
+}
+
+#gradient-bottom {
+  height: 9rem;
+  bottom: 0;
+  top:auto;
+  background-image: linear-gradient(to top, var(--tw-gradient-stops));
+  
+  --tw-gradient-from: rgb(24, 24, 27) var(--tw-gradient-from-position);
+  --tw-gradient-to: transparent var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+
+  --tw-gradient-from-position: 60%;
+  --tw-gradient-to-position: 90%;
+}
+
+@media (min-width:800px) {
   #header {
     margin-bottom: 0;
-    margin-top: 1rem;
+    margin-top: 2rem;
     top: 0;
-  }
 
+    --tw-translate-y: -1rem/* -16px */;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+  }
+  
+  #gradient-top {
+    bottom: 0;
+    height: 9rem;
+    
+    --tw-gradient-from: transparent var(--tw-gradient-from-position);
+    --tw-gradient-to: rgb(24, 24, 27) var(--tw-gradient-to-position);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+    
+    --tw-gradient-from-position: 10%;
+    --tw-gradient-to-position: 40%;
+  }
+  
+  #gradient-bottom {
+    height: 2rem;
+    bottom: 0;
+    background-image: linear-gradient(to top, var(--tw-gradient-stops));
+    
+    --tw-gradient-from: rgb(24, 24, 27) var(--tw-gradient-from-position);
+    --tw-gradient-to: transparent var(--tw-gradient-to-position);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+
+    --tw-gradient-from-position: 0%;
+    --tw-gradient-to-position: 100%;
+  }
+  
   #task-list-container {
     margin-top: 6rem;
     margin-bottom: 1rem;

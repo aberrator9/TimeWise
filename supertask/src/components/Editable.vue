@@ -16,7 +16,7 @@ const editable = ref(null)
 
 </script>
 
-<style>
+<style scoped>
 div {
     word-wrap: break-word;
 }

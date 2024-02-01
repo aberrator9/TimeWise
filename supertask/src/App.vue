@@ -1,6 +1,12 @@
 <template>
   <main>
-    <div id="header" class="z-10 mb-2 bottom-0 w-[100%] h-32 fixed text-2xl font-bold text-center">
+    <div id="gradient-top" class="z-10 m-0 p-0 fixed w-full pointer-events-none">
+      <div id="blocker" class="z-0 m-0 p-0 relative w-full h-[60%] pointer-events-auto"></div>
+    </div>
+    <div id="gradient-bottom" class="z-10 m-0 p-0 fixed w-full pointer-events-none">
+      <div id="blocker" class="z-0 translate-y-14 m-0 p-0 relative w-full h-[60%] pointer-events-auto"></div>
+    </div>
+    <div id="header" class="z-20 w-full h-0.5 fixed text-2xl font-bold text-center">
       <button v-show="editMode"
         class="m-4 p-2 px-4 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.4)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 rounded-sm"
         @click.stop="editMode = !editMode">
@@ -18,7 +24,7 @@
     </div>
     <div class="place-items-center justify-center p-0 min-h-[100vh] bg-zinc-900 flex flex-col"
       @click.self="activeIdx = -1">
-      <div id="task-list-container" class="mt-4 mb-28">
+      <div id="task-list-container">
         <div v-if="editMode">
           <div v-for="(task, index) in tasks" :key="task">
             <div
