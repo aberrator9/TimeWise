@@ -38,20 +38,21 @@
               <Editable @keydown.enter.prevent="onPressEnter" id="task" class="text-2xl font-bold justify-start mt-2 ml-1"
                 @update="updateTaskName" :task-name="task.name" :task="task" />
               <Collapse @click.stop :when="index === activeIdx" class="v-collapse">
-                <div v-for="time in task.timeSpans">
-                  <label class="text-sm mr-2" for="start">Start</label>
-                  <input id="time" @keydown.enter.prevent="onPressEnter" class="text-sm h-6 bg-zinc-900" type="time"
-                    name="start" v-model="time.start">
-                  <label class="text-sm ml-4 mr-2" for="end">End</label>
-                  <input id="time" @keydown.enter.prevent="onPressEnter" class="text-sm h-6 bg-zinc-900" type="time"
-                    name="end" v-model="time.end">
-                  <span v-for="(day, index) in time.days">
-                    <button
-                      class="mt-2 m-0.5 p-0 w-[1.8rem] h-[1.8rem] rounded-full hover:bg-lime-800 selection:bg-transparent"
+                <div class="flex flex-wrap place-items-center space-x-1 space-y-1.5 my-6 bg-gradient-to-t to-40% from-zinc-900 to-zinc-800 border-zinc-900 border-2" v-for="time in task.timeSpans">
+                  <div class="inline-flex basis-full text-sm place-items-center justify-evenly">
+                      <label for="start">Start</label>
+                      <input id="time" @keydown.enter.prevent="onPressEnter" class="text-sm h-6 bg-zinc-900" type="time"
+                      name="start" v-model="time.start">
+                      <label for="end">End</label>
+                      <input id="time" @keydown.enter.prevent="onPressEnter" class="text-sm h-6 bg-zinc-900" type="time"
+                      name="end" v-model="time.end">
+                  </div>
+                  <div class=" justify-evenly" v-for="(day, index) in time.days">
+                    <button class="p-0 w-7 h-7 mb-1.5 rounded-full hover:bg-lime-800 selection:bg-transparent"
                       :class="{ 'bg-lime-700': day }" @click="time.days[index] = !time.days[index]">
                       {{ dayAliases[index].short }}
                     </button>
-                  </span>
+                  </div>
                 </div>
                 <Subtasks @new-subtask="" @remove-subtask="removeSubtask" :task="task" />
                 <div class="flex space-x-4 mb-2 mt-3 place-items-center">
