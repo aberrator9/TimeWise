@@ -7,25 +7,38 @@
             <div class="flex justify-between">
                 <p class="my-2 ml-4"> {{ (task.subtasks && task.subtasks.length) ? task.subtasks[task.subIdx].name : '' }}
                 </p>
-                <button class="end-0 block" @click="rerollSubtask(task)"
-                    :class="{ hidden: task.subtasks.length <= 1 }">
-                    <svg width="36px" height="36px" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"> <title>random-filled</title> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="icon" fill="#f87171" transform="translate(46.976875, 46.976875)"> <path d="M379.689791,38.3564581 L379.689791,379.689791 L38.3564581,379.689791 L38.3564581,38.3564581 L379.689791,38.3564581 Z M283.689791,251.689791 C266.016679,251.689791 251.689791,266.016679 251.689791,283.689791 C251.689791,301.362903 266.016679,315.689791 283.689791,315.689791 C301.362903,315.689791 315.689791,301.362903 315.689791,283.689791 C315.689791,266.016679 301.362903,251.689791 283.689791,251.689791 Z M209.023125,177.023125 C191.350013,177.023125 177.023125,191.350013 177.023125,209.023125 C177.023125,226.696237 191.350013,241.023125 209.023125,241.023125 C226.696237,241.023125 241.023125,226.696237 241.023125,209.023125 C241.023125,191.350013 226.696237,177.023125 209.023125,177.023125 Z M134.356458,102.356458 C116.683346,102.356458 102.356458,116.683346 102.356458,134.356458 C102.356458,152.02957 116.683346,166.356458 134.356458,166.356458 C152.02957,166.356458 166.356458,152.02957 166.356458,134.356458 C166.356458,116.683346 152.02957,102.356458 134.356458,102.356458 Z" id="Combined-Shape" transform="translate(209.023125, 209.023125) rotate(90.000000) translate(-209.023125, -209.023125) "> </path> </g> </g> </svg>
+                <button class="end-0 block" @click="rerollSubtask(task)" :class="{ hidden: task.subtasks.length <= 1 }">
+                    <svg width="36px" height="36px" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <title>random-filled</title>
+                        <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <g id="icon" fill="#f87171" transform="translate(46.976875, 46.976875)">
+                                <path
+                                    d="M379.689791,38.3564581 L379.689791,379.689791 L38.3564581,379.689791 L38.3564581,38.3564581 L379.689791,38.3564581 Z M283.689791,251.689791 C266.016679,251.689791 251.689791,266.016679 251.689791,283.689791 C251.689791,301.362903 266.016679,315.689791 283.689791,315.689791 C301.362903,315.689791 315.689791,301.362903 315.689791,283.689791 C315.689791,266.016679 301.362903,251.689791 283.689791,251.689791 Z M209.023125,177.023125 C191.350013,177.023125 177.023125,191.350013 177.023125,209.023125 C177.023125,226.696237 191.350013,241.023125 209.023125,241.023125 C226.696237,241.023125 241.023125,226.696237 241.023125,209.023125 C241.023125,191.350013 226.696237,177.023125 209.023125,177.023125 Z M134.356458,102.356458 C116.683346,102.356458 102.356458,116.683346 102.356458,134.356458 C102.356458,152.02957 116.683346,166.356458 134.356458,166.356458 C152.02957,166.356458 166.356458,152.02957 166.356458,134.356458 C166.356458,116.683346 152.02957,102.356458 134.356458,102.356458 Z"
+                                    id="Combined-Shape"
+                                    transform="translate(209.023125, 209.023125) rotate(90.000000) translate(-209.023125, -209.023125) ">
+                                </path>
+                            </g>
+                        </g>
+                    </svg>
                 </button>
             </div>
-            <p class="ml-2 mb-3">For {{ timeLeft(task) }} more {{ units }}</p>
+            <p class="ml-3 mt-4 mb-2">For {{ timeLeft(task) }} more {{ units }}</p>
             <div class="w-[90%] h-0.5 my-1 ml-[5%]">
                 <div class="shadow w-full bg-zinc-700 h-0.5">
-                    <div class="bg-red-400 leading-none text-center text-white h-0.5" :style="{ width: `${percentComplete(task)}%` }"></div>
+                    <div class="bg-red-400 leading-none text-center text-white h-0.5"
+                        :style="{ width: `${percentComplete(task)}%` }"></div>
                 </div>
             </div>
         </div>
     </div>
 
-        <div v-show="showNext">
-            <p class="p-5 m-4 place-items-center min-h-24 text-xl w-[17.5rem]">Next...</p>
-            <div class="p-5 m-4 mb-4 place-items-center min-h-24 text-lg w-[17.5rem] border-2 border-red-400 bg-zinc-800 shadow-[8px_8px_0px_rgba(225,90,65,0.4)] hover:shadow-[10px_10px_0px_rgba(225,90,65,0.6)] rounded-sm">
-            <div class="text-2xl font-bold justify-start mt-2 ml-1">{{ nextTask() }}</div>
-            <p class="ml-2 mb-3"></p>
+    <div v-show="showNext">
+        <p class="text-center text-2xl pb-5">Up next...</p>
+        <div
+            class="p-5 m-4 mb-4 place-items-center min-h-24 text-lg w-[17.5rem] border-2 border-red-400 bg-zinc-800 shadow-[8px_8px_0px_rgba(225,90,65,0.4)] hover:shadow-[10px_10px_0px_rgba(225,90,65,0.6)] rounded-sm">
+            <div class="text-2xl font-bold justify-start mt-2 ml-1">{{ getNextTask() }}</div>
+            <!-- <p v-show="next" class="ml-3 mt-4 mb-2">In <span v-show="next.daysUntil > 0">{{ next.daysUntil }} days and </span>{{ next.timeSpan.start }} {{ units }}</p> -->
         </div>
     </div>
 </template>
@@ -41,10 +54,9 @@ const props = defineProps({
 
 const now = ref(new Date())
 let tasksNow = ref([])
+const next = ref({})
 const showNext = ref(false)
 
-let next = undefined
-let daysUntilNext = -1
 let units = 'hours'
 let today = 0
 
@@ -53,7 +65,9 @@ setInterval(() => {
     tasksNow.value = currentTasks()
 }, 1000);
 
-onMounted(() => tasksNow.value = currentTasks())
+onMounted(() => {
+    tasksNow.value = currentTasks()
+})
 
 function HHMM(date) {
     return date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0')
@@ -77,7 +91,7 @@ function isHappeningNow(timeSpan) {
 function lastEndTimeSpanHappeningNow(task) {
     return task.timeSpans
         .filter((x) => isHappeningNow(x))
-        .sort((a, b) => { a.end - b.end })[0]
+        .sort((a, b) => a.end - b.end)[0]
 }
 
 function currentTasks() {
@@ -86,37 +100,52 @@ function currentTasks() {
     showNext.value = tasksNow.length <= 0
 }
 
-function nextTask() {
+function getNextTask() {
     const tasksFuture = props.tasks
         .filter((task) => task.timeSpans.some((time) => isValid(time) && !isHappeningNow(time)))
 
-    if(tasksFuture.length <= 0) {
+    if (tasksFuture.length <= 0) {
         return 'Nothing left to do 💀'
     }
 
     let day = today
-    // while(next === undefined) {
-    //     next = tasksFuture
-    //         .filter((t) => t.days[day] === true)
-    //         .sort((a, b) => a.timeSpan.start - b.timeSpan.start)[0];
+    let daysUntil = -2
 
-    //     day = day === 6 ? 0 : day + 1
-    //     daysUntilNext++
-    // }
+    let result = undefined
 
-    if(next) {
-        return next.name
+    while (result === undefined) {
+        result = tasksFuture
+            .filter((t) => t.timeSpans.some((span) => span.days[day] === true))
+            .map((task) => {
+                const earliestTimeSpan = task.timeSpans
+                    .filter((span) => span.days[day] === true)
+                    .sort((a, b) => a.start - b.start)[0]
+
+                // console.log('earliest time in', task, 'is', earliestTimeSpan)
+
+                return { task, earliestTimeSpan }
+            })
+            .sort((a, b) => a.earliestTimeSpan.start - b.earliestTimeSpan.start)[0]
+
+        day = day === 6 ? 0 : day + 1
+        daysUntil++
+    }
+
+    if (result) {
+        next.value.task = result.task
+        next.value.timeSpan = result.earliestTimeSpan
+        next.value.daysUntil = daysUntil
+
+        return result.task.name
     }
 }
 
 function timeLeft(task) {
-    // Get all timespans from this task happening now
-    // Get last end time; that's endSplit
     const lastEndTimeSpan = lastEndTimeSpanHappeningNow(task)
 
     const endSplit = lastEndTimeSpan.end.split(':')
     const nowSplit = HHMM(now.value).split(':')
-    
+
     let [hours, minutes] = [0, 0]
 
     if (lastEndTimeSpan.start <= lastEndTimeSpan.end) {   // Doesn't go past midnight
@@ -124,8 +153,8 @@ function timeLeft(task) {
     } else {
         hours = 24 - nowSplit[0] + Number(endSplit[0])
     }
-    
-    if (nowSplit[1] <= endSplit[1]) {               // Doesn't go past the top of the hour, when there's a three minute ad break, which you can avoid by subscribing for $5 or for free using your Twitch Prime. Here's the three minute ad break now.
+
+    if (nowSplit[1] <= endSplit[1]) {               // Doesn't go past the top of the hour
         minutes = endSplit[1] - nowSplit[1]
     } else {
         minutes = 60 - nowSplit[1] + Number(endSplit[1])
@@ -144,7 +173,7 @@ function timeLeft(task) {
 // function timeUntil(task) {
 //     const startSplit = task.timeSpan.start.split(':')
 //     const nowSplit = HHMM(now.value).split(':')
-    
+
 //     let [hours, minutes] = [0, startSplit[1] - nowSplit[1]]
 
 //     if (task.timeSpan.start <= task.timeSpan.end) {     // Doesn't go over midnight
