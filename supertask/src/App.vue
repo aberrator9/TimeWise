@@ -38,7 +38,7 @@
               <Editable @keydown.enter.prevent="onPressEnter" id="task" class="text-2xl font-bold justify-start mt-2 ml-1"
                 @update="updateTaskName" :task-name="task.name" :task="task" />
               <Collapse @click.stop :when="index === activeIdx" class="v-collapse">
-                <div class="flex flex-wrap place-items-center space-x-1 space-y-1.5 my-6 bg-gradient-to-t to-40% from-zinc-900 to-zinc-800 border-zinc-900 border-2" v-for="time in task.timeSpans">
+                <div v-for="time in task.timeSpans" class="flex flex-wrap place-items-center space-x-1 space-y-1.5 my-6 bg-gradient-to-t to-40% from-zinc-900 to-zinc-800 border-zinc-900 border-2">
                   <div class="inline-flex basis-full text-sm place-items-center justify-evenly">
                       <label for="start">Start</label>
                       <input id="time" @keydown.enter.prevent="onPressEnter" class="text-sm h-6 bg-zinc-900" type="time"
@@ -47,15 +47,18 @@
                       <input id="time" @keydown.enter.prevent="onPressEnter" class="text-sm h-6 bg-zinc-900" type="time"
                       name="end" v-model="time.end">
                   </div>
-                  <div class=" justify-evenly" v-for="(day, index) in time.days">
+                  <div v-for="(day, index) in time.days">
                     <button class="p-0 w-7 h-7 mb-1.5 rounded-full hover:bg-lime-800 selection:bg-transparent"
                       :class="{ 'bg-lime-700': day }" @click="time.days[index] = !time.days[index]">
                       {{ dayAliases[index].short }}
                     </button>
                   </div>
+                  <div class="absolute right-0 -translate-x-[4.2rem] -translate-y-6">
+                    <RemoveIcon @click="removeTimeSpan(task, time)" class="h-[1.75rem] w-[1.75rem]" />
+                </div>
                 </div>
                 <Subtasks @new-subtask="" @remove-subtask="removeSubtask" :task="task" />
-                <div class="flex space-x-4 mb-2 mt-3 place-items-center">
+                <div class="flex space-x-4 mb-2 mt-5 place-items-center">
                   <button @click="newSubtask(task)"
                     class="p-2 px-4 bg-zinc-800 shadow-[6px_6px_0px_rgba(225,90,65,0.2)] hover:shadow-[8px_8px_0px_rgba(225,90,65,0.4)] border-red-400 border-2 rounded-sm">
                     <p class="font-bold text-lg h-6 w-20 -translate-y-0.5 -translate-x-0.5">+ Subtask</p>
@@ -80,7 +83,7 @@
           </div>
         </div>
         <div v-else>
-          <FocusMode :tasks="tasks" />
+          <FocusMode :tasks="tasks" :day-aliases="dayAliases" />
         </div>
       </div>
     </div>
@@ -129,6 +132,10 @@ function scrollToElement(e) {
 
 function newTimeSpan(task) {
   task.timeSpans.push({ start: '-1', end: '-1', days: [false, false, false, false, false, false, false] })
+}
+
+function removeTimeSpan(task, index) {
+  task.timeSpans.splice(index, 1)
 }
 
 function newTask() {

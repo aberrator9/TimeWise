@@ -1,18 +1,19 @@
 <template>
     <div>
-        <div class="mt-6">
-            <div v-for="(subtask, index) in task.subtasks" :key="subtask.id">
-                <div class="inline-flex space-x-2">
+        <div v-for="(subtask, index) in task.subtasks" :key="subtask.id" class="mx-3 space-y-8">
+            <div class="flex items-center justify-between h-10">
+                <div class="flex items-center space-x-3">
                     <input type="checkbox" v-model="subtask.done" />
                     <Editable @keydown.enter.prevent="onPressEnter" @focus="activeIdx = index" id="subtask"
                         :class="{ done: subtask.done }" @update="updateTaskName" :task-name="subtask.name"
                         :task="subtask" />
-                    <span v-if="index === activeIdx">
-                        <RemoveIcon @click="$emit('remove-subtask', [index, task.subtasks])" />
-                    </span>
+                </div>
+                <div v-if="index === activeIdx" class="flex items-center">
+                    <RemoveIcon @click="$emit('remove-subtask', [index, task.subtasks])" class="h-[1.75rem] w-[1.75rem]" />
                 </div>
             </div>
         </div>
+
     </div>
 </template>
 
