@@ -134,8 +134,8 @@ function newTimeSpan(task) {
   task.timeSpans.push({ start: '-1', end: '-1', days: [false, false, false, false, false, false, false] })
 }
 
-function removeTimeSpan(task, index) {
-  task.timeSpans.splice(index, 1)
+function removeTimeSpan(task, timeSpan) {
+  task.timeSpans = task.timeSpans.filter((t) => t !== timeSpan)
 }
 
 function newTask() {
