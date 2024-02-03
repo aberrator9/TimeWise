@@ -1,52 +1,32 @@
-name: 🚀 Deploy Vue.js 3 App to VPS
-
+name: Build and Deploy
 on:
   push:
-    branches: [ 'main' ]
-  pull_request:
-    branches: [ 'main' ]
-  workflow_dispatch:
-
+    branches:
+      - main
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    env:
-      APP_DIR: /var/www/tasks.aberrator.com
-
+    strategy:
+      matrix:
+        node-version: [12.x]
     steps:
-      - name: 🚚 Get latest code
-        uses: actions/checkout@v4
-
-      - name: 🚀 Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      - name: 🔍 Install dependencies
-        run: npm install
-
-      - name: 🧱 Build application
-        run: npm run build
-
-      - name: 📤 Deploy to VPS
-        uses: easingthemes/ssh-deploy@main
-        with:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          ARGS: "-azrut --delete"
-          SOURCE: "dist/"
-          REMOTE_HOST: ${{ secrets.SSH_HOST }}
-          REMOTE_USER: ${{ secrets.SSH_USERNAME }}
-          REMOTE_PORT: ${{ secrets.SSH_PORT }}
-          TARGET: ${{ env.APP_DIR }}/html
-          SCRIPT_BEFORE: |
-            if ! command -v rsync &> /dev/null
-            then
-              echo "rsync could not be found, installing..."
-              sudo apt-get update
-              sudo apt-get install -y rsync
-            else
-              echo "rsync is already installed."
-            fi
-            echo "Starting deployment..."
-          SCRIPT_AFTER: |
-            echo "Vue.js app deployed successfully!"
+      - uses: actions/checkout@main
+      - name: Deploy
+        run: |
+          which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y  )
+          which rsync || ( apt-get update -y && apt-get install rsync -y )
+          eval $(ssh-agent -s)
+          ssh-add <(echo "$SSH_PRIVATE_KEY" )
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+          npm install
+          npm run build
+          scp -r dist/* $SSH_USER@$SSH_HOST:/var/www/$APP_DIR/html
+    env:
+      SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}}
+      SSH_HOST: ${{secrets.SSH_HOST}}
+      SSH_USER: ${{secrets.SSH_USER}}
+      APP_DIR: ${{secrets.APP_DIR}}
+      CI: false
