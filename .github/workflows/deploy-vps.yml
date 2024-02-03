@@ -11,6 +11,11 @@ jobs:
         node-version: [12.x]
     steps:
       - uses: actions/checkout@main
+      - name: Build Vue App
+        run: |
+          npm install
+          npm run build
+        working-directory: ./dist/
       - name: Deploy
         run: |
           which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y  )
@@ -21,13 +26,10 @@ jobs:
           chmod 700 ~/.ssh
           ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
-          npm install
-          npm run build
-          mkdir -p $SSH_USER@$SSH_HOST:/var/www/$APP_DIR/html/
-          cp -r dist/* $SSH_USER@$SSH_HOST:/var/www/$APP_DIR/html/
-    env:
-      SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}}
-      SSH_HOST: ${{secrets.SSH_HOST}}
-      SSH_USER: ${{secrets.SSH_USER}}
-      APP_DIR: ${{secrets.APP_DIR}}
-      CI: false
+          rsync -r --delete-after ./dist/ $SSH_USER@$SSH_HOST:$APP_DIR
+        env:
+          SSH_PRIVATE_KEY: ${{secrets.SSH_KEY}}
+          SSH_USER: ${{secrets.SSH_USER}}
+          SSH_HOST: ${{secrets.SSH_HOST}}
+          APP_DIR: ${{secrets.APP_DIR}}
+          CI: false
