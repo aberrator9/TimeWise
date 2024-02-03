@@ -1,35 +1,52 @@
-name: Build and Deploy
+name: 🚀 Deploy Vue.js 3 App to VPS
+
 on:
   push:
-    branches:
-      - main
+    branches: [ 'main' ]
+  pull_request:
+    branches: [ 'main' ]
+  workflow_dispatch:
+
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [12.x]
+    env:
+      APP_DIR: /var/www/tasks.aberrator.com
+
     steps:
-      - uses: actions/checkout@main
-      - name: Build Vue App
-        run: |
-          npm install
-          npm run build
-        working-directory: dist/
-      - name: Deploy
-        run: |
-          which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y  )
-          which rsync || ( apt-get update -y && apt-get install rsync -y )
-          eval $(ssh-agent -s)
-          ssh-add <(echo "$SSH_PRIVATE_KEY" )
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
-          rsync -r --delete-after dist/ $SSH_USER@$SSH_HOST:$APP_DIR
-        env:
-          SSH_PRIVATE_KEY: ${{secrets.SSH_KEY}}
-          SSH_USER: ${{secrets.SSH_USER}}
-          SSH_HOST: ${{secrets.SSH_HOST}}
-          APP_DIR: ${{secrets.APP_DIR}}
-          CI: false
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
+
+      - name: 🚀 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: 🔍 Install dependencies
+        run: npm install
+
+      - name: 🧱 Build application
+        run: npm run build
+
+      - name: 📤 Deploy to VPS
+        uses: easingthemes/ssh-deploy@main
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          ARGS: "-azrut --delete"
+          SOURCE: "dist/"
+          REMOTE_HOST: ${{ secrets.SSH_HOST }}
+          REMOTE_USER: ${{ secrets.SSH_USER }}
+          REMOTE_PORT: ${{ secrets.SSH_PORT }}
+          TARGET: ${{ env.APP_DIR }}/html
+          SCRIPT_BEFORE: |
+            if ! command -v rsync &> /dev/null
+            then
+              echo "rsync could not be found, installing..."
+              sudo apt-get update
+              sudo apt-get install -y rsync
+            else
+              echo "rsync is already installed."
+            fi
+            echo "Starting deployment..."
+          SCRIPT_AFTER: |
+            echo "Vue.js app deployed successfully!"
