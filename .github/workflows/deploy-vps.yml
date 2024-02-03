@@ -15,7 +15,7 @@ jobs:
         run: |
           npm install
           npm run build
-        working-directory: ./dist/
+        working-directory: dist/
       - name: Deploy
         run: |
           which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y  )
@@ -26,7 +26,7 @@ jobs:
           chmod 700 ~/.ssh
           ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
-          rsync -r --delete-after ./dist/ $SSH_USER@$SSH_HOST:$APP_DIR
+          rsync -r --delete-after dist/ $SSH_USER@$SSH_HOST:$APP_DIR
         env:
           SSH_PRIVATE_KEY: ${{secrets.SSH_KEY}}
           SSH_USER: ${{secrets.SSH_USER}}
