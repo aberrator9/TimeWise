@@ -23,10 +23,9 @@ jobs:
           chmod 644 ~/.ssh/known_hosts
           npm install
           npm run build
-          cp -r dist/* $SSH_USER@$SSH_HOST:/var/www/$APP_DIR/html
+          cp -r dist/* $SSH_USER@$SSH_HOST:/var/www/tasks.aberrator.com/html
     env:
       SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}}
       SSH_HOST: ${{secrets.SSH_HOST}}
       SSH_USER: ${{secrets.SSH_USER}}
-      APP_DIR: ${{secrets.APP_DIR}}
       CI: false
