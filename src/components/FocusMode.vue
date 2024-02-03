@@ -1,5 +1,5 @@
 <template>
-    <div v-show="!showNext" v-for="task in tasksNow">
+    <div v-if="!showNext" v-for="task in tasksNow">
         <div
             class="mt-8 p-5 m-4 mb-4 place-items-center min-h-24 text-lg w-[17.5rem] border-2 border-red-400 bg-zinc-800 shadow-[8px_8px_0px_rgba(225,90,65,0.4)] hover:shadow-[10px_10px_0px_rgba(225,90,65,0.6)]rounded-sm">
             <Editable class="pointer-events-none text-2xl font-bold justify-start mt-2 ml-1" :task-name="task.name"
@@ -32,8 +32,7 @@
             </div>
         </div>
     </div>
-
-    <div v-show="showNext">
+    <div v-else>
         <p class="text-center text-2xl pb-5">Up next...</p>
         <div
             class="p-5 m-4 mb-4 place-items-center min-h-24 text-lg w-[17.5rem] border-2 border-red-400 bg-zinc-800 shadow-[8px_8px_0px_rgba(225,90,65,0.4)] hover:shadow-[10px_10px_0px_rgba(225,90,65,0.6)] rounded-sm">
