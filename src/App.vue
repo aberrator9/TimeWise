@@ -53,7 +53,7 @@
                       {{ dayAliases[index].short }}
                     </button>
                   </div>
-                  <div class="absolute right-0 -translate-x-[4.2rem] -translate-y-6">
+                  <div class="absolute translate-x-[14.4rem] -translate-y-6">
                     <RemoveIcon @click="removeTimeSpan(task, time)" class="h-[1.75rem] w-[1.75rem]" />
                 </div>
                 </div>
