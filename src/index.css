@@ -46,6 +46,10 @@ body {
   opacity: 25%;
 }
 
+.mt2 {
+  margin-top: 1rem;
+}
+
 #app {
   min-height: 100vh;
 }

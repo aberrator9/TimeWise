@@ -57,6 +57,9 @@
                     <RemoveIcon @click="removeTimeSpan(task, time)" class="h-[1.75rem] w-[1.75rem]" />
                 </div>
                 </div>
+                <div v-show="!hasValidTimeSpan(task)" >
+                  <p class="text-red-500 w-64 text-md -translate-y-2 my-1" :class="{ mt2: task.timeSpans <= 0 }">Requires at least one time span.</p>
+                </div>
                 <Subtasks @new-subtask="" @remove-subtask="removeSubtask" :task="task" />
                 <div class="flex space-x-4 mb-2 mt-5 place-items-center">
                   <button @click="newSubtask(task)"
@@ -92,7 +95,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick, watch, vShow } from 'vue'
 import { uuid } from 'vue-uuid';
 import { Collapse } from 'vue-collapsed'
 import FocusMode from './components/FocusMode.vue'
@@ -128,6 +131,14 @@ function scrollToElement(e) {
   if (e.target) {
     e.target.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }
+}
+
+function hasValidTimeSpan(task) {
+  return task.timeSpans.length > 0 &&
+    task.timeSpans.some((t) =>
+      t.start !== '-1' &&
+      t.end !== '-1' &&
+      t.days.some((d) => d === true))
 }
 
 function newTimeSpan(task) {
