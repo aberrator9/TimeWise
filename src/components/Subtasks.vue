@@ -1,14 +1,14 @@
 <template>
     <div>
         <div v-for="(subtask, index) in task.subtasks" :key="subtask.id" class="mx-3 space-y-8">
-            <div class="flex items-center justify-between h-10">
-                <div class="flex items-center space-x-3">
-                    <input type="checkbox" v-model="subtask.done" />
+            <div class="flex justify-between">
+                <div class="flex items-start space-x-3">
+                    <input type="checkbox" v-model="subtask.done" class="translate-y-2" />
                     <Editable @keydown.enter.prevent="onPressEnter" @focus="activeIdx = index" id="subtask"
                         :class="{ done: subtask.done }" @update="updateTaskName" :task-name="subtask.name"
-                        :task="subtask" />
+                        :task="subtask" class=" w-40" />
                 </div>
-                <div v-if="index === activeIdx" class="flex items-center">
+                <div v-show="index === activeIdx" class="flex">
                     <RemoveIcon @click="$emit('remove-subtask', [index, task.subtasks])" class="h-[1.75rem] w-[1.75rem]" />
                 </div>
             </div>
