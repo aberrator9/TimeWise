@@ -136,11 +136,11 @@ function getNextTask() {
             .map((task) => {
                 const earliestTimeSpan = task.timeSpans
                     .filter((span) => span.days[day] === true)
-                    .sort((a, b) => a.start - b.start)[0]
+                    .sort((a, b) => a.start - b.start).reverse()[0]
 
                 return { task, earliestTimeSpan }
             })
-            .sort((a, b) => a.earliestTimeSpan.start - b.earliestTimeSpan.start).reverse()[0]
+            .sort((a, b) => a.earliestTimeSpan.start - b.earliestTimeSpan.start)[0]
     }
 
     return { task: result.task.name, start: convertTo12Hr(result.earliestTimeSpan.start), day: day }
