@@ -36,8 +36,8 @@
         <p class="text-center text-2xl pb-5">Up next...</p>
         <div
             class="p-5 m-4 mb-4 place-items-center min-h-24 text-lg w-[17.5rem] border-2 border-red-400 bg-zinc-800 shadow-[8px_8px_0px_rgba(225,90,65,0.4)] hover:shadow-[10px_10px_0px_rgba(225,90,65,0.6)] rounded-sm">
-            <div class="text-2xl font-bold justify-start mt-2 ml-1">{{ next.task }}</div>
-            <p class="my-2 ml-4">{{ isTomorrow(next.day) ? 'Tomorrow' : `${dayAliases[next.day].long}` }} at {{  next.start }}</p>
+            <div class="text-2xl font-bold justify-start mt-2 ml-1">{{ next ? next.task : 'Nothing left to do 💀' }}</div>
+            <p class="my-2 ml-4">{{ next ? (isTomorrow(next.day) ? 'Tomorrow at ${next.start}' : `${dayAliases[next.day].long} at ${next.start}`) : '' }}</p>
         </div>
     </div>
 </template>
@@ -119,7 +119,7 @@ function getNextTask() {
         .filter((task) => task.timeSpans.some((time) => isValid(time) && !isHappeningNow(time)))
 
     if (tasksFuture.length <= 0) {
-        return 'Nothing left to do 💀'
+        return 
     }
 
     let day = today
