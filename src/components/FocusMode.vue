@@ -43,7 +43,7 @@
 </template>
 
 <script setup>
-import { ref, defineProps, onMounted } from 'vue'
+import { ref, defineProps, onMounted, onUnmounted } from 'vue'
 import Editable from './Editable.vue';
 
 const props = defineProps({
@@ -59,17 +59,23 @@ const showNext = ref(false)
 let units = 'hours'
 let today = 0
 
+
 onMounted(() => {
     now.value = new Date()
     tasksNow.value = currentTasks()
     next.value = getNextTask()
 })
 
-setInterval(() => {
-    now.value = new Date()
-    tasksNow.value = currentTasks()
-    next.value = getNextTask()
+const getNextInterval = setInterval(() => {
+      now.value = new Date()
+      tasksNow.value = currentTasks()
+      next.value = getNextTask()
 }, 1000);
+
+onUnmounted(() => {
+    clearInterval(getNextInterval)
+})
+
 
 function isTomorrow(day) {
     return day - today === 1 || day - today === -6
@@ -134,21 +140,21 @@ function getNextTask() {
         result = tasksFuture
             .filter((t) => t.timeSpans.some((span) => span.days[day] === true))
             .map((task) => {
-                const earliestTimeSpan = task.timeSpans
+                const thisTasksTimeSpansInOrder = task.timeSpans
                     .filter((span) => span.days[day] === true)
-                    .sort((a, b) => a.start - b.start).reverse()[0]
+                    .sort((a, b) => a.start - b.start)
 
-                return { task, earliestTimeSpan }
-            })
-            .sort((a, b) => a.earliestTimeSpan.start - b.earliestTimeSpan.start)[0]
-    }
+                const earliestTimeSpan = thisTasksTimeSpansInOrder[0]
+
+                    console.log('timespans in order', thisTasksTimeSpansInOrder)
+                    // console.log('earliestTimeSpan after 1st sort', earliestTimeSpan.start, '-', earliestTimeSpan.end)
+                    
+                    return { task, earliestTimeSpan }
+                })
+                .sort((a, b) => a.earliestTimeSpan.start - b.earliestTimeSpan.start).reverse()[0]
+            }
 
     return { task: result.task.name, start: convertTo12Hr(result.earliestTimeSpan.start), day: day }
-    // if (result) {
-    //     next.value.task = result.task.name
-    //     next.value.timeSpan = result.earliestTimeSpan
-    //     next.value.day = day
-    // }
 }
 
 function timeLeft(task) {
@@ -179,28 +185,6 @@ function timeLeft(task) {
         return minutes
     }
 }
-
-// TODO
-// function timeUntil(task) {
-//     const startSplit = task.timeSpan.start.split(':')
-//     const nowSplit = HHMM(now.value).split(':')
-
-//     let [hours, minutes] = [0, startSplit[1] - nowSplit[1]]
-
-//     if (task.timeSpan.start <= task.timeSpan.end) {     // Doesn't go over midnight
-//         hours = startSplit[0] - nowSplit[0]
-//     } else {
-//         hours = daysUntilNext * 24 - nowSplit[0] + Number(startSplit[0])
-//     }
-
-//     if (hours > 0) {
-//         units = 'hour' + (hours === 1 ? '' : 's')
-//         return hours
-//     } else {
-//         units = 'minute' + (minutes === 1 ? '' : 's')
-//         return minutes
-//     }
-// }
 
 function percentComplete(task) {
     const nowSplit = HHMM(now.value).split(':')
