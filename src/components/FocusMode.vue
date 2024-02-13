@@ -37,13 +37,14 @@
         <div
             class="p-5 m-4 mb-4 place-items-center min-h-24 text-lg w-[17.5rem] border-2 border-red-400 bg-zinc-800 shadow-[8px_8px_0px_rgba(225,90,65,0.4)] hover:shadow-[10px_10px_0px_rgba(225,90,65,0.6)] rounded-sm">
             <div class="text-2xl font-bold justify-start mt-2 ml-1">{{ next ? next.task : 'Nothing left to do 💀' }}</div>
-            <p class="my-2 ml-4">{{ next ? (isTomorrow(next.day) ? 'Tomorrow at ${next.start}' : `${dayAliases[next.day].long} at ${next.start}`) : '' }}</p>
+            <p class="my-2 ml-4">{{ next ? (isTomorrow(next.day) ? `Tomorrow at ${next.start}` :
+                `${dayAliases[next.day].long} at ${next.start}`) : '' }}</p>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, defineProps, onMounted, onUnmounted } from 'vue'
+import { ref, defineProps, onMounted, onUnmounted, isReactive } from 'vue'
 import Editable from './Editable.vue';
 
 const props = defineProps({
@@ -64,12 +65,14 @@ onMounted(() => {
     now.value = new Date()
     tasksNow.value = currentTasks()
     next.value = getNextTask()
+    console.log('next after assignment', next)
 })
 
 const getNextInterval = setInterval(() => {
-      now.value = new Date()
-      tasksNow.value = currentTasks()
-      next.value = getNextTask()
+    now.value = new Date()
+    tasksNow.value = currentTasks()
+    next.value = getNextTask()
+    console.log('next after assignment', next)
 }, 1000);
 
 onUnmounted(() => {
@@ -125,36 +128,34 @@ function getNextTask() {
         .filter((task) => task.timeSpans.some((time) => isValid(time) && !isHappeningNow(time)))
 
     if (tasksFuture.length <= 0) {
-        return 
+        return
     }
 
     let day = today
-    let daysUntil = -1
-
     let result = undefined
 
     while (result === undefined) {
         day = day === 6 ? 0 : day + 1
-        daysUntil++
 
-        result = tasksFuture
+        const tasksToday = tasksFuture
             .filter((t) => t.timeSpans.some((span) => span.days[day] === true))
-            .map((task) => {
-                const thisTasksTimeSpansInOrder = task.timeSpans
-                    .filter((span) => span.days[day] === true)
-                    .sort((a, b) => a.start - b.start)
 
-                const earliestTimeSpan = thisTasksTimeSpansInOrder[0]
+            console.log('tasksToday', tasksToday)
 
-                    console.log('timespans in order', thisTasksTimeSpansInOrder)
-                    // console.log('earliestTimeSpan after 1st sort', earliestTimeSpan.start, '-', earliestTimeSpan.end)
-                    
-                    return { task, earliestTimeSpan }
-                })
-                .sort((a, b) => a.earliestTimeSpan.start - b.earliestTimeSpan.start).reverse()[0]
+        let timeSpansToday = [];
+        for (let t = 0; t < tasksToday.length; t++) {
+            for (let s = 0; s < tasksToday[t].timeSpans.length; s++) {
+                if(tasksToday[t].timeSpans[s].days[day] === true) {
+                    timeSpansToday.push([tasksToday[t].name, tasksToday[t].timeSpans[s].start]);
+                }
             }
+        }
 
-    return { task: result.task.name, start: convertTo12Hr(result.earliestTimeSpan.start), day: day }
+        timeSpansToday.sort();
+        result = timeSpansToday[0]
+    }
+
+    return { task: result[0], start: convertTo12Hr(result[1]), day: day }
 }
 
 function timeLeft(task) {
