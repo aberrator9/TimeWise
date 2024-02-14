@@ -37,8 +37,8 @@
         <div
             class="p-5 m-4 mb-4 place-items-center min-h-24 text-lg w-[17.5rem] border-2 border-red-400 bg-zinc-800 shadow-[8px_8px_0px_rgba(225,90,65,0.4)] hover:shadow-[10px_10px_0px_rgba(225,90,65,0.6)] rounded-sm">
             <div class="text-2xl font-bold justify-start mt-2 ml-1">{{ next ? next.task : 'Nothing left to do 💀' }}</div>
-            <p class="my-2 ml-4">{{ next ? (isTomorrow(next.day) ? `Tomorrow at ${next.start}` :
-                `${dayAliases[next.day].long} at ${next.start}`) : '' }}</p>
+            <p class="my-2 ml-4">{{ next ? next.day === today ? `Today at ${next.start}` : ((isTomorrow(next.day) ? `Tomorrow at ${next.start}` :
+                `${dayAliases[next.day].long} at ${next.start}`)) : '' }}</p>
         </div>
     </div>
 </template>
@@ -60,15 +60,16 @@ const showNext = ref(false)
 let units = 'hours'
 let today = 0
 
-
 onMounted(() => {
     now.value = new Date()
+    today = now.value.getDay()
     tasksNow.value = currentTasks()
     next.value = getNextTask()
 })
 
 const getNextInterval = setInterval(() => {
     now.value = new Date()
+    today = now.value.getDay()
     tasksNow.value = currentTasks()
     next.value = getNextTask()
 }, 1000);
@@ -99,7 +100,6 @@ function isValid(timeSpan) {
 }
 
 function isHappeningNow(timeSpan) {
-    today = now.value.getDay()
     const time = HHMM(now.value);
 
     if (timeSpan.start <= timeSpan.end) {     // Doesn't go over midnight
@@ -129,28 +129,29 @@ function getNextTask() {
         return
     }
 
-    let day = today - 1
+    let day = today
     let result = undefined
     const nowHHMM = HHMM(now.value)
 
     while (result === undefined) {
-        day = day === 6 ? 0 : day + 1
-
         const tasksToday = tasksFuture
-            .filter((t) => t.timeSpans.some((span) => span.days[day] === true))
+        .filter((t) => t.timeSpans.some((span) => span.days[day] === true))
         
         let timeSpansToday = [];
         for (let t = 0; t < tasksToday.length; t++) {
             for (let s = 0; s < tasksToday[t].timeSpans.length; s++) {
-                if(tasksToday[t].timeSpans[s].days[day] === true && tasksToday[t].timeSpans[s].start > nowHHMM) {
+                if(tasksToday[t].timeSpans[s].days[day] === true && (day !== today || tasksToday[t].timeSpans[s].start > nowHHMM)) {
                     timeSpansToday.push([tasksToday[t].name, tasksToday[t].timeSpans[s].start]);
                 }
             }
         }
         
-        timeSpansToday.sort((a, b) => a[1] - b[1]).reverse()
-        console.log('timeSpansToday', timeSpansToday)
+        timeSpansToday.sort((a, b) => a[1] - b[1])
         result = timeSpansToday[0]
+
+        if (!result) {
+            day = day === 6 ? 0 : day + 1
+        }
     }
 
     return { task: result[0], start: convertTo12Hr(result[1]), day: day }
