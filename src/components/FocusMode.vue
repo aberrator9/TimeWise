@@ -65,14 +65,12 @@ onMounted(() => {
     now.value = new Date()
     tasksNow.value = currentTasks()
     next.value = getNextTask()
-    console.log('next after assignment', next)
 })
 
 const getNextInterval = setInterval(() => {
     now.value = new Date()
     tasksNow.value = currentTasks()
     next.value = getNextTask()
-    console.log('next after assignment', next)
 }, 1000);
 
 onUnmounted(() => {
@@ -131,27 +129,27 @@ function getNextTask() {
         return
     }
 
-    let day = today
+    let day = today - 1
     let result = undefined
+    const nowHHMM = HHMM(now.value)
 
     while (result === undefined) {
         day = day === 6 ? 0 : day + 1
 
         const tasksToday = tasksFuture
             .filter((t) => t.timeSpans.some((span) => span.days[day] === true))
-
-            console.log('tasksToday', tasksToday)
-
+        
         let timeSpansToday = [];
         for (let t = 0; t < tasksToday.length; t++) {
             for (let s = 0; s < tasksToday[t].timeSpans.length; s++) {
-                if(tasksToday[t].timeSpans[s].days[day] === true) {
+                if(tasksToday[t].timeSpans[s].days[day] === true && tasksToday[t].timeSpans[s].start > nowHHMM) {
                     timeSpansToday.push([tasksToday[t].name, tasksToday[t].timeSpans[s].start]);
                 }
             }
         }
-
-        timeSpansToday.sort();
+        
+        timeSpansToday.sort((a, b) => a[1] - b[1]).reverse()
+        console.log('timeSpansToday', timeSpansToday)
         result = timeSpansToday[0]
     }
 
