@@ -72,7 +72,7 @@ const getNextInterval = setInterval(() => {
     today = now.value.getDay()
     tasksNow.value = currentTasks()
     next.value = getNextTask()
-}, 1000);
+}, 60000);
 
 onUnmounted(() => {
     clearInterval(getNextInterval)
@@ -142,13 +142,11 @@ function getNextTask() {
             for (let s = 0; s < tasksToday[t].timeSpans.length; s++) {
                 if(tasksToday[t].timeSpans[s].days[day] === true && (day !== today || tasksToday[t].timeSpans[s].start > nowHHMM)) {
                     timeSpansToday.push([tasksToday[t].name, tasksToday[t].timeSpans[s].start]);
-                    console.log(tasksToday[t].name, tasksToday[t].timeSpans[s].start)
                 }
             }
         }
         
         timeSpansToday.sort((a, b) => a[1].split(':')[0] - b[1].split(':')[0])
-        console.log(timeSpansToday)
         result = timeSpansToday[0]
 
         if (!result) {
