@@ -7,7 +7,7 @@
             <div class="flex justify-between">
                 <p class="my-2 ml-4"> {{ (task.subtasks && task.subtasks.length) ? task.subtasks[task.subIdx].name : '' }}
                 </p>
-                <button class="end-0 block" @click="rerollSubtask(task)" :class="{ hidden: task.subtasks.length <= 1 }">
+                <button v-show="task.subtasks.length > 1" class="end-0 block" @click="rerollSubtask(task)">
                     <svg width="36px" height="36px" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg"
                         xmlns:xlink="http://www.w3.org/1999/xlink">
                         <title>random-filled</title>
@@ -142,11 +142,13 @@ function getNextTask() {
             for (let s = 0; s < tasksToday[t].timeSpans.length; s++) {
                 if(tasksToday[t].timeSpans[s].days[day] === true && (day !== today || tasksToday[t].timeSpans[s].start > nowHHMM)) {
                     timeSpansToday.push([tasksToday[t].name, tasksToday[t].timeSpans[s].start]);
+                    console.log(tasksToday[t].name, tasksToday[t].timeSpans[s].start)
                 }
             }
         }
         
-        timeSpansToday.sort((a, b) => a[1] - b[1])
+        timeSpansToday.sort((a, b) => a[1].split(':')[0] - b[1].split(':')[0])
+        console.log(timeSpansToday)
         result = timeSpansToday[0]
 
         if (!result) {
@@ -168,13 +170,13 @@ function timeLeft(task) {
     if (lastEndTimeSpan.start <= lastEndTimeSpan.end) {   // Doesn't go past midnight
         hours = endSplit[0] - nowSplit[0]
     } else {
-        hours = 24 - nowSplit[0] + Number(endSplit[0])
+        hours = 24 - nowSplit[0] + parseInt(endSplit[0])
     }
 
     if (nowSplit[1] <= endSplit[1]) {               // Doesn't go past the top of the hour
         minutes = endSplit[1] - nowSplit[1]
     } else {
-        minutes = 60 - nowSplit[1] + Number(endSplit[1])
+        minutes = 60 - nowSplit[1] + parseInt(endSplit[1])
     }
 
     if (hours > 1) {
@@ -201,10 +203,6 @@ function percentComplete(task) {
 }
 
 function rerollSubtask(task) {
-    if (task.subtasks.length < 2) {
-        return
-    }
-
     let random = task.subIdx
 
     while (random === task.subIdx) {
