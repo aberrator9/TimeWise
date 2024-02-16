@@ -1,6 +1,6 @@
 # TimeWise
 
-A scheduled task app, designed for repeated learning-related tasks and subtasks, with the goal of eliminating decision fatigue. Think of it as an aspirational mix of a calendar, a Todo list, and a Pomodoro app.
+A scheduled task app, designed for repeated tasks, with the goal of eliminating decision fatigue. Think of it as an aspirational mix of a calendar, a Todo list, and a Pomodoro app.
 
 Each item you add represents a category of activity that you plan to do on a specific day and time.
 
