@@ -37,15 +37,16 @@
         <div
             class="p-5 m-4 mb-4 place-items-center min-h-24 text-lg w-[17.5rem] border-2 border-red-400 bg-zinc-800 shadow-[8px_8px_0px_rgba(225,90,65,0.4)] hover:shadow-[10px_10px_0px_rgba(225,90,65,0.6)] rounded-sm">
             <div class="text-2xl font-bold justify-start mt-2 ml-1">{{ next ? next.task : 'Nothing left to do 💀' }}</div>
-            <p class="my-2 ml-4">{{ next ? next.day === today ? `Today at ${next.start}` : ((isTomorrow(next.day) ? `Tomorrow at ${next.start}` :
+            <p class="my-2 ml-4">{{ next ? next.day === today ? `Today at ${next.start}` : ((isTomorrow(today, next.day) ? `Tomorrow at ${next.start}` :
                 `${dayAliases[next.day].long} at ${next.start}`)) : '' }}</p>
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, defineProps, onMounted, onUnmounted, isReactive } from 'vue'
+import { ref, defineProps, onMounted, onUnmounted } from 'vue'
 import Editable from './Editable.vue';
+import { convertTo12Hr, HHMM, isTomorrow } from '../utils.js'
 
 const props = defineProps({
     tasks: Array,
@@ -77,23 +78,6 @@ const getNextInterval = setInterval(() => {
 onUnmounted(() => {
     clearInterval(getNextInterval)
 })
-
-
-function isTomorrow(day) {
-    return day - today === 1 || day - today === -6
-}
-
-function HHMM(date) {
-    return date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0')
-}
-
-function convertTo12Hr(timeStr) {
-    const split = timeStr.split(':')
-    const hrs = split[0] > 12 ? split[0] - 12 : split[0]
-    const ampm = split[0] >= 12 ? 'PM' : 'AM'
-
-    return `${hrs}:${split[1]} ${ampm}`
-}
 
 function isValid(timeSpan) {
     return timeSpan.start !== '-1' && timeSpan.end !== '-1' && timeSpan.days.some((day) => day === true)
