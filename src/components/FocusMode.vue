@@ -106,8 +106,10 @@ function currentTasks() {
 }
 
 function getNextTask() {
+    const nowHHMM = HHMM(now.value)
     const tasksFuture = props.tasks
-        .filter((task) => task.timeSpans.some((time) => isValid(time) && !isHappeningNow(time)))
+        .filter((task) => task.timeSpans.some((span) => isValid(span) && !isHappeningNow(span) && span.start > nowHHMM))
+    console.log('tasksFuture', tasksFuture)
 
     if (tasksFuture.length <= 0) {
         return
@@ -115,12 +117,11 @@ function getNextTask() {
 
     let day = today
     let result = undefined
-    const nowHHMM = HHMM(now.value)
 
     while (result === undefined) {
         const tasksToday = tasksFuture
         .filter((t) => t.timeSpans.some((span) => span.days[day] === true))
-        
+
         let timeSpansToday = [];
         for (let t = 0; t < tasksToday.length; t++) {
             for (let s = 0; s < tasksToday[t].timeSpans.length; s++) {

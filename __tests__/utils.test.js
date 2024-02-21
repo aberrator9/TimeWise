@@ -40,19 +40,22 @@ describe('convertTo12Hr', () => {
   it('returns a string', () => {
     expect(typeof(convertTo12Hr('23:59'))).toBe('string')
   })
-  it('converts a 24h timestring (HH:MM) to 12h HH:MM [AM/PM]', () => {
+  it('converts a 24h timestring (HH:MM) to 12h HH:MM AM/PM', () => {
     expect(/((1[0-2]|0?[1-9]):([0-5][0-9]) ?([AaPp][Mm]))/.test(convertTo12Hr('23:59'))).toBe(true)
   })
+  it('handles 1 min before midnight', () => {
+    expect(convertTo12Hr('23:59')).toBe('11:59 PM')
+  })
   it('handles midnight', () => {
-    expect(convertTo12Hr('24:00')).toBe('12:00 AM')
+    expect(convertTo12Hr('00:00')).toBe('12:00 AM')
   })
   it('handles 1 min past midnight', () => {
-    expect(convertTo12Hr('24:01')).toBe('12:01 AM')
+    expect(convertTo12Hr('00:01')).toBe('12:01 AM')
   })
   it('handles noon', () => {
     expect(convertTo12Hr('12:00')).toBe('12:00 PM')
   })
   it('clamps on negative time input', () => {
-    expect(convertTo12Hr('-11:01')).toBe('0:01 AM')
+    expect(convertTo12Hr('-11:01')).toBe('12:01 AM')
   })
 })
