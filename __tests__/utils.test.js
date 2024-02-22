@@ -2,17 +2,21 @@ import { expect, it, describe, expectTypeOf } from 'vitest'
 import { isTomorrow, HHMM, convertTo12Hr } from '../src/utils.js'
 
 describe('isTomorrow', () => {
-
   it('returns a Boolean', () => {
-    expect(typeof isTomorrow(0)).toBe('boolean')
+    expect(typeof isTomorrow(0, 1)).toBe('boolean')
   })
-
-  // it('handles last day of the week', () => {
-  //   expect(typeof isTomorrow(6)).toBe('boolean')
-  // })
-
-  //mock
-
+  it('handles a day that is tomorrow', () => {
+    expect(isTomorrow(1, 2)).toBe(true)
+  })
+  it('handles a day that is not tomorrow', () => {
+    expect(isTomorrow(1, 0)).toBe(false)
+  })
+  it('handles same day', () => {
+    expect(isTomorrow(0, 0)).toBe(false)
+  })
+  it('handles end of the week', () => {
+    expect(isTomorrow(6, 0)).toBe(true)
+  })
 })
 
 describe('HHMM', () => {
