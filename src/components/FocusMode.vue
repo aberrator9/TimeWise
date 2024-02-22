@@ -118,7 +118,6 @@ function getNextTask() {
     const nowHHMM = HHMM(now.value)
     const tasksFuture = props.tasks
         .filter((task) => task.timeSpans.some((span) => isValid(span) && !isHappeningNow(span)))
-    console.log('tasksFuture', tasksFuture)
 
     if (tasksFuture.length <= 0) {
         return
@@ -137,17 +136,12 @@ function getNextTask() {
             for (let s = 0; s < tasksToday[t].timeSpans.length; s++) {
                 if(tasksToday[t].timeSpans[s].days[day] === true) {
                     if(daysUntil > 0 || tasksToday[t].timeSpans[s].start > nowHHMM) {
-                        console.log('daysuntil > 0 ?', daysUntil>0)
-                        console.log('tasksToday[t].timeSpans[s].start > HHMM(now)', tasksToday[t].timeSpans[s].start > HHMM(now))
-                        console.log('pushing', tasksToday[t].name, tasksToday[t].timeSpans[s].start)
                         timeSpansToday.push([tasksToday[t].name, tasksToday[t].timeSpans[s].start]);
                     }
                 }
             }
         }
 
-        console.log('timespansToday', timeSpansToday)
-        
         timeSpansToday.sort((a, b) => a[1].split(':')[0] - b[1].split(':')[0])
         result = timeSpansToday[0]
         daysUntil++
