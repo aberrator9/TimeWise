@@ -37,17 +37,7 @@
         <div
             class="p-5 m-4 mb-4 place-items-center min-h-24 text-lg w-[17.5rem] border-2 border-red-400 bg-zinc-800 shadow-[8px_8px_0px_rgba(225,90,65,0.4)] hover:shadow-[10px_10px_0px_rgba(225,90,65,0.6)] rounded-sm">
             <div class="text-2xl font-bold justify-start mt-2 ml-1">{{ next ? next.task : 'Nothing left to do 💀' }}</div>
-            <p class="my-2 ml-4">{{
-                next ?
-                    next.day === today ?
-                        (next.start > now ?
-                            `Today at ${next.start}` :
-                            `Next ${dayAliases[next.day].long} at ${next.start}`) :
-                    isTomorrow(today, next.day) ?
-                        `Tomorrow at ${next.start}` :
-                        `${dayAliases[next.day].long} at ${next.start}` :
-                ''
-            }}</p>
+            <p class="my-2 ml-4">{{ next ? next.when : '' }}</p>
         </div>
     </div>
 </template>
@@ -64,7 +54,7 @@ const props = defineProps({
 
 const now = ref(new Date())
 let tasksNow = ref([])
-const next = ref({ task: '', start: '', day: 0 })
+const next = ref({ task: '', start: '', day: 0, when: '' })
 const showNext = ref(false)
 
 let units = 'hours'
@@ -144,6 +134,7 @@ function getNextTask() {
 
         timeSpansToday.sort((a, b) => a[1].split(':')[0] - b[1].split(':')[0])
         result = timeSpansToday[0]
+        console.log(result, day)
         daysUntil++
 
         if (!result) {
@@ -151,7 +142,24 @@ function getNextTask() {
         }
     }
 
-    return { task: result[0], start: convertTo12Hr(result[1]), day: day }
+    const start12Hr = convertTo12Hr(result[1])
+    let relativeWhen = ''
+
+    if(result){
+        if(day === today) {
+            if(result[1]> nowHHMM) {
+                relativeWhen = `Today at ${start12Hr}`
+            } else{
+                relativeWhen = `Next ${props.dayAliases[day].long} at ${start12Hr}`
+            }
+        } else if (isTomorrow(today, day)) {
+            relativeWhen = `Tomorrow at ${start12Hr}`
+        } else {
+            relativeWhen = `${props.dayAliases[day].long} at ${start12Hr}`
+        }
+    }
+
+    return { task: result[0], start: start12Hr, day: day, when: relativeWhen }
 }
 
 function timeLeft(task) {
