@@ -169,31 +169,32 @@ function timeLeft(task) {
     const endSplit = lastEndTimeSpan.end.split(':')
     const nowSplit = HHMM(now.value).split(':')
 
-    let [hours, minutes] = [0, 0]
+    let [hoursLeft, minutesLeft, hoursTotal, minutesTotal] = [0, 0, 0, 0]
 
     if (lastEndTimeSpan.start <= lastEndTimeSpan.end) {  // Doesn't go past midnight
-        hours = endSplit[0] - nowSplit[0]
+        hoursLeft = endSplit[0] - nowSplit[0]
+        hoursTotal = endSplit[0] - startSplit[0]
     } else {
-        hours = 24 - nowSplit[0] + parseInt(endSplit[0])
+        hoursLeft = 24 - nowSplit[0] + parseInt(endSplit[0])
+        hoursTotal = 24 - startSplit[0] + parseInt(endSplit[0])
     }
 
     if (nowSplit[1] <= endSplit[1]) {  // Doesn't go past the top of the hour
-        minutes = endSplit[1] - nowSplit[1]
+        minutesLeft = endSplit[1] - nowSplit[1]
+        minutesTotal = endSplit[1] - startSplit[1]
     } else {
-        minutes = 60 - nowSplit[1] + parseInt(endSplit[1])
+        minutesLeft = 60 - nowSplit[1] + parseInt(endSplit[1])
+        minutesTotal = 60 - startSplit[1] + parseInt(endSplit[1])
     }
 
-    const nowMinutes = nowSplit[0] * 60 + nowSplit[1]
-    const startMinutes = startSplit[0] * 60 + startSplit[1]
-    const endMinutes = endSplit[0] * 60 + endSplit[1]
-    percentComplete.value = (1 - (endMinutes - nowMinutes) / (endMinutes - startMinutes)) * 100
+    percentComplete.value = (1 - (hoursLeft * 60 + minutesLeft) / (hoursTotal * 60 + minutesTotal)) * 100
 
-    if (hours > 1) {
-        units = 'hour' + (hours === 1 ? '' : 's')
-        return hours
+    if (hoursLeft > 1) {
+        units = 'hour' + (hoursLeft === 1 ? '' : 's')
+        return hoursLeft
     } else {
-        units = 'minute' + (minutes === 1 ? '' : 's')
-        return minutes
+        units = 'minute' + (minutesLeft === 1 ? '' : 's')
+        return minutesLeft
     }
 }
 
