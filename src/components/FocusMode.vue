@@ -27,7 +27,7 @@
             <div class="w-[90%] h-0.5 my-1 ml-[5%]">
                 <div class="shadow w-full bg-zinc-700 h-0.5">
                     <div class="bg-red-400 leading-none text-center text-white h-0.5"
-                        :style="{ width: `${percentComplete(task)}%` }"></div>
+                        :style="{ width: `${percentComplete}%` }"></div>
                 </div>
             </div>
         </div>
@@ -57,6 +57,7 @@ let tasksNow = ref([])
 const next = ref({ task: '', start: '', day: 0, when: '' })
 const showNext = ref(false)
 
+const percentComplete = ref(-1)
 let units = 'hours'
 let today = 0
 
@@ -134,7 +135,6 @@ function getNextTask() {
 
         timeSpansToday.sort((a, b) => a[1].split(':')[0] - b[1].split(':')[0])
         result = timeSpansToday[0]
-        console.log(result, day)
         daysUntil++
 
         if (!result) {
@@ -165,22 +165,28 @@ function getNextTask() {
 function timeLeft(task) {
     const lastEndTimeSpan = lastEndTimeSpanHappeningNow(task)
 
+    const startSplit = lastEndTimeSpan.start.split(':')
     const endSplit = lastEndTimeSpan.end.split(':')
     const nowSplit = HHMM(now.value).split(':')
 
     let [hours, minutes] = [0, 0]
 
-    if (lastEndTimeSpan.start <= lastEndTimeSpan.end) {   // Doesn't go past midnight
+    if (lastEndTimeSpan.start <= lastEndTimeSpan.end) {  // Doesn't go past midnight
         hours = endSplit[0] - nowSplit[0]
     } else {
         hours = 24 - nowSplit[0] + parseInt(endSplit[0])
     }
 
-    if (nowSplit[1] <= endSplit[1]) {               // Doesn't go past the top of the hour
+    if (nowSplit[1] <= endSplit[1]) {  // Doesn't go past the top of the hour
         minutes = endSplit[1] - nowSplit[1]
     } else {
         minutes = 60 - nowSplit[1] + parseInt(endSplit[1])
     }
+
+    const nowMinutes = nowSplit[0] * 60 + nowSplit[1]
+    const startMinutes = startSplit[0] * 60 + startSplit[1]
+    const endMinutes = endSplit[0] * 60 + endSplit[1]
+    percentComplete.value = (1 - (endMinutes - nowMinutes) / (endMinutes - startMinutes)) * 100
 
     if (hours > 1) {
         units = 'hour' + (hours === 1 ? '' : 's')
@@ -189,20 +195,6 @@ function timeLeft(task) {
         units = 'minute' + (minutes === 1 ? '' : 's')
         return minutes
     }
-}
-
-function percentComplete(task) {
-    const nowSplit = HHMM(now.value).split(':')
-
-    const lastEndTimeSpan = lastEndTimeSpanHappeningNow(task)
-    const startSplit = lastEndTimeSpan.start.split(':')
-    const endSplit = lastEndTimeSpan.end.split(':')
-
-    const nowMinutes = nowSplit[0] * 60 + nowSplit[1]
-    const startMinutes = startSplit[0] * 60 + startSplit[1]
-    const endMinutes = endSplit[0] * 60 + endSplit[1]
-
-    return (1 - (endMinutes - nowMinutes) / (endMinutes - startMinutes)) * 100
 }
 
 function rerollSubtask(task) {
